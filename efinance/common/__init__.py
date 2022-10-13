@@ -5,6 +5,8 @@ from .getter import (
     get_history_bill,
     get_base_info,
     get_deal_detail,
-    get_latest_quote
+    get_latest_quote,
+    get_index_codes,
+    get_block_codes
 )
 __all__ = []

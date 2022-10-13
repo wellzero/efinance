@@ -19,6 +19,8 @@ from ..common import get_deal_detail as get_deal_detail_for_stock
 from ..common import get_history_bill as get_history_bill_for_stock
 from ..common import get_quote_history as get_quote_history_for_stock
 from ..common import get_realtime_quotes_by_fs
+from ..common import get_index_codes
+from ..common import get_block_codes
 from ..common import get_today_bill as get_today_bill_for_stock
 from ..common.config import EASTMONEY_REQUEST_HEADERS, FS_DICT, MagicConfig
 from ..common.getter import get_latest_quote as get_latest_quote_for_stock
@@ -1479,3 +1481,18 @@ def get_belong_board(stock_code: str) -> pd.DataFrame:
     df.insert(0, '股票名称', q.name)
     df.insert(1, '股票代码', q.code)
     return df
+
+def get_indexs_codes():
+
+  pd_sh = get_index_codes('sh')
+  pd_sz = get_index_codes('sz')
+  pd_sh_sz = get_index_codes('sh_sz')
+  pd_cn = get_index_codes('cn')
+  return [pd_sh, pd_sz, pd_sh_sz, pd_cn]
+
+def get_blocks_codes():
+
+  pd_indurstry = get_block_codes('indurstry')
+  pd_concept = get_block_codes('concept')
+  pd_province = get_block_codes('province')
+  return [pd_indurstry, pd_concept, pd_province]

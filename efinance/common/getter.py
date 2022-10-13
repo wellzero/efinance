@@ -6,6 +6,7 @@ import pandas as pd
 from jsonpath import jsonpath
 from retry import retry
 from tqdm import tqdm
+import numpy as np
 
 from ..common.config import MARKET_NUMBER_DICT
 from ..shared import BASE_INFO_CACHE, session
@@ -13,6 +14,7 @@ from ..utils import get_quote_id, to_numeric
 from .config import (EASTMONEY_BASE_INFO_FIELDS, EASTMONEY_HISTORY_BILL_FIELDS,
                      EASTMONEY_KLINE_FIELDS, EASTMONEY_KLINE_NDAYS_FIELDS,
                      EASTMONEY_QUOTE_FIELDS, EASTMONEY_REQUEST_HEADERS,
+                     EASTMONEY_INDEX_BLOCK_INFO_DIELDS,
                      MagicConfig)
 
 
@@ -506,3 +508,67 @@ def get_latest_ndays_quote(code: str,
     df.insert(0, '名称', name)
 
     return df
+
+# @to_numeric
+def get_index_codes(index: str):
+# index
+# SH index
+#http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:1+s:2&fields=f12,f14
+#SZ index
+#http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:0+t:5&fields=f12,f14
+# index member
+#http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:1+s:3,m:0+t:5&fields=f12,f14
+# china index
+#http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:2&fields=f12,f14
+  fs_dict = {'sh': 'm:1+s:2', 'sz': 'm:0+t:5', 'sh_sz': 'm:1+s:3,m:0+t:5', 'cn': 'm:2'}
+  fields = list(EASTMONEY_INDEX_BLOCK_INFO_DIELDS.keys())
+  cols = list(EASTMONEY_INDEX_BLOCK_INFO_DIELDS.values())
+  fields2 = ",".join(fields)
+  params = (
+    ('fields', fields2),
+    ('fs', fs_dict[index]),
+    ('invt', 2),
+    ('fltt', 2),
+    ('np', 1),
+    ('po', 1),
+    ('pz', 2000000),
+    ('pn', 1)
+    )
+  json_response = session.get('http://8.push2.eastmoney.com/api/qt/clist/get',
+                                params=params).json()
+  datas = json_response['data']['diff']
+  rows = []
+  [rows.append([data[fields[0]], data[fields[1]]]) for data in datas]
+  df = pd.DataFrame(data=np.array(rows).squeeze(), columns=cols)
+  return df
+
+# @to_numeric
+def get_block_codes(block: str):
+# block
+# province
+#http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:1+f:!50&fields=f12,f14
+#indurstry
+#http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:2+f:!50&fields=f12,f14
+#concept 
+#http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f12,f14
+  fs_dict = {'province': 'm:90+t:1+f:!50', 'indurstry': 'm:90+t:2+f:!50', 'concept': 'm:90+t:3+f:!50'}
+  fields = list(EASTMONEY_INDEX_BLOCK_INFO_DIELDS.keys())
+  cols = list(EASTMONEY_INDEX_BLOCK_INFO_DIELDS.values())
+  fields2 = ",".join(fields)
+  params = (
+    ('fields', fields2),
+    ('fs', fs_dict[block]),
+    ('invt', 2),
+    ('fltt', 2),
+    ('np', 1),
+    ('po', 1),
+    ('pz', 2000000),
+    ('pn', 1)
+    )
+  json_response = session.get('http://98.push2.eastmoney.com/api/qt/clist/get',
+                                params=params).json()
+  datas = json_response['data']['diff']
+  rows = []
+  [rows.append([data[fields[0]], data[fields[1]]]) for data in datas]
+  df = pd.DataFrame(data=np.array(rows).squeeze(), columns=cols)
+  return df
