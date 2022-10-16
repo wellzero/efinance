@@ -6,6 +6,7 @@ from .getter import (get_all_company_performance, get_all_report_dates,
                      get_quote_snapshot, get_realtime_quotes, get_today_bill,
                      get_top10_stock_holder_info,
                      get_indexs_codes, get_blocks_codes)
+from . import index_block
 
 __all__ = ['get_history_bill',
            'get_today_bill',

@@ -1,5 +1,5 @@
 import os
-import efinance as ef
+from ..getter import *
 
 class get_index_block_data:
   def __init__(self, path, indexs = ['sh', 'sz', 'sh_sz', 'cn'], blocks = ['indurstry', 'concept', 'province']):
@@ -15,7 +15,8 @@ class get_index_block_data:
     if not os.path.exists(path):
       os.makedirs(path)
     for code in codes:
-      data = ef.stock.get_quote_history(code)
+      print("download code", code)
+      data = get_quote_history(code)
       file = os.path.join(path, code + '.csv')
       data.to_csv(file, encoding='gbk')
      
@@ -23,9 +24,9 @@ class get_index_block_data:
   def get_data(self):
       
     for block in self.blocks:
-      code_names = ef.common.get_block_codes(block)
+      code_names = get_block_codes(block)
       self.get_data_common(code_names.loc[:, 'code'].values, os.path.join(self.path, block))
 
     for index in self.indexs:
-      code_names = ef.common.get_index_codes(index)
+      code_names = get_index_codes(index)
       self.get_data_common(code_names.loc[:, 'code'].values, os.path.join(self.path, index))
