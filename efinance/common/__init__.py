@@ -1,4 +1,6 @@
 from .getter import (
+    get_common_json_head,
+    get_common_json_nohead,
     get_quote_history,
     get_realtime_quotes_by_fs,
     get_today_bill,

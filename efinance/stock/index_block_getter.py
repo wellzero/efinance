@@ -1,5 +1,5 @@
 import os
-from ..getter import *
+from .getter import *
 
 class get_index_block_data:
   def __init__(self, path, indexs = ['sh', 'sz', 'sh_sz', 'cn'], blocks = ['indurstry', 'concept', 'province']):

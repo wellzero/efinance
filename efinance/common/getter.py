@@ -17,6 +17,20 @@ from .config import (EASTMONEY_BASE_INFO_FIELDS, EASTMONEY_HISTORY_BILL_FIELDS,
                      EASTMONEY_INDEX_BLOCK_INFO_DIELDS,
                      MagicConfig)
 
+DELAY = 50
+
+@retry(tries=-1, delay=DELAY)
+def get_common_json_head(url, head, para):
+    json_response = session.get(url,
+                                headers=head,
+                                params=para).json()
+    return json_response
+
+@retry(tries=-1, delay=DELAY)
+def get_common_json_nohead(url, para):
+    json_response = session.get(url,
+                                params=para).json()
+    return json_response
 
 @to_numeric
 def get_realtime_quotes_by_fs(fs: str,
