@@ -9,6 +9,7 @@ from .getter import (get_all_company_performance, get_all_report_dates,
 
 from .index_block_getter import (get_index_block_data)
 from .datacenter_getter import (datacenter)
+from .push2_98_getter import (push2_98)
 
 __all__ = ['get_history_bill',
            'get_today_bill',

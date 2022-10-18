@@ -27,9 +27,9 @@ def get_common_json_head(url, head, para):
     return json_response
 
 @retry(tries=-1, delay=DELAY)
-def get_common_json_nohead(url, para):
+def get_common_json_nohead(url, params):
     json_response = session.get(url,
-                                params=para).json()
+                                params=params).json()
     return json_response
 
 @to_numeric

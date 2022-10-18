@@ -12,7 +12,6 @@ class datacenter:
   def __init__(self, path):
 
     self.path = path
-    self.url = 'https://datacenter-web.eastmoney.com/api/data/v1/get'
     if not os.path.exists(path):
       os.makedirs(path)
 
@@ -46,6 +45,9 @@ class datacenter:
       df = pd.concat(dfs, ignore_index=True)
       if len(df) > 0:
         df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
+    else:
+      print("download ", filename, "failed, pls check it!")
+      exit(-1)
 
 
   def get_north_acc_net_buy(self, filename = 'nort_acc.csv'):
