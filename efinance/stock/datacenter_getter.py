@@ -16,7 +16,7 @@ class datacenter:
     if not os.path.exists(path):
       os.makedirs(path)
 
-  def get_common_data(self, url, params, fields):
+  def get_common_data(self, url, params, fields, filename):
 
     bar: tqdm = None
     dfs: List[pd.DataFrame] = []
@@ -43,8 +43,10 @@ class datacenter:
         dfs.append(df)
 
     if(len(dfs) > 0):
-     df = pd.concat(dfs, ignore_index=True)
-    return df
+      df = pd.concat(dfs, ignore_index=True)
+      if len(df) > 0:
+        df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
+
 
   def get_north_acc_net_buy(self, filename = 'nort_acc.csv'):
 
@@ -62,12 +64,7 @@ class datacenter:
             ('client', 'WEB'),
             ('sortColumns', 'TRADE_DATE')
     )
-    dfs = self.get_common_data(url, params, fields)
-
-    if len(dfs) > 0:
-      dfs.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
-
-
+    dfs = self.get_common_data(url, params, fields, filename)
 
   def get_north_stock_status(self, date='2022-10-17', filename = 'north_stock_status_2022-10-17.csv'):
 
@@ -93,20 +90,17 @@ class datacenter:
         'TOTAL_RATIO_CHG': 'total_cap_inc_ratio'
       }
     params = (
+          ('reportName', 'RPT_MUTUAL_STOCK_NORTHSTA'),
           ('sortColumns', 'ADD_MARKET_CAP'),
           ('sortTypes', '-1'),
           ('pageSize', '500'),
-          ('reportName', 'RPT_MUTUAL_STOCK_NORTHSTA'),
           ('source', 'WEB'),
           ('client', 'WEB'),
           ('filter',
              f"(TRADE_DATE='{date}')(INTERVAL_TYPE=1)"),
       )
 
-    dfs = self.get_common_data(url, params, fields)
-
-    if len(dfs) > 0:
-      dfs.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
+    self.get_common_data(url, params, fields, filename)
 
   def get_north_stock_daily_trade(self, stock_code='600519', filename = 'north_SH600519.csv'):
 
@@ -125,17 +119,84 @@ class datacenter:
       "HOLD_MARKETCAP_CHG10": "10days_cap_change"
       }
     params = (
+          ('reportName', 'RPT_MUTUAL_HOLDSTOCKNORTH_STA'),
           ('sortColumns', 'TRADE_DATE'),
           ('sortTypes', '-1'),
           ('pageSize', '500'),
-          ('reportName', 'RPT_MUTUAL_HOLDSTOCKNORTH_STA'),
           ('source', 'WEB'),
           ('client', 'WEB'),
           ('filter',
             f" (SECURITY_CODE={stock_code})(TRADE_DATE>='2022-07-16')"),
       )
 
-    dfs = self.get_common_data(url, params, fields)
+    self.get_common_data(url, params, fields, filename)
 
-    if len(dfs) > 0:
-      dfs.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
+  def get_margin_short_stock_status(self, date='2022-10-17', filename = 'margin_short_stock_status_2022-10-17.csv'):
+
+    mode = 'auto'
+    if date is None:
+      today = datetime.today().date()
+      date = str(today)
+
+    url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
+    fields = {
+        "SECUCODE":"code",
+        "SECNAME":"name",
+        "SPJ":"price_close",
+        "ZDF":"price_ratio",
+        "RZYE":"RZ余额(元)",
+        "RZYEZB":"RZ余额占流通市值比",
+        "RZMRE":"RZ买入额(元)",
+        "RZCHE":"RZ偿还额(元)",
+        "RZJME":"RZ净买入(元)",
+        "RQYE":"RQ余额(元",
+        "RQYL":"RQ余量(股)",
+        "RQMCL":"RQ卖出量(股)",
+        "RQCHL":"RQ偿还量(股)",
+        "RQJMG":"RQ净卖出(股)",
+        "RZRQYE":"RQ融资融券余额(元)",
+        "RZRQYECZ":"RQ融资融券余额差值(元)"
+      }
+    params = (
+          ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
+          ('sortTypes', '-1'),
+          ('pageSize', '500'),
+          ('sortColumns', 'RZJME'),
+          ('source', 'WEB'),
+          ('filter',
+             f"(date='{date}')"),
+      )
+
+    self.get_common_data(url, params, fields, filename)
+
+  def get_margin_short_stock(self, stock_code='600519', filename = 'margin_short_600519.csv'):
+
+    url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
+    fields = {
+        "SECUCODE":"code",
+        "SECNAME":"name",
+        "SPJ":"price_close",
+        "ZDF":"price_ratio",
+        "RZYE":"RZ余额(元)",
+        "RZYEZB":"RZ余额占流通市值比",
+        "RZMRE":"RZ买入额(元)",
+        "RZCHE":"RZ偿还额(元)",
+        "RZJME":"RZ净买入(元)",
+        "RQYE":"RQ余额(元",
+        "RQYL":"RQ余量(股)",
+        "RQMCL":"RQ卖出量(股)",
+        "RQCHL":"RQ偿还量(股)",
+        "RQJMG":"RQ净卖出(股)",
+        "RZRQYE":"RQ融资融券余额(元)",
+        "RZRQYECZ":"RQ融资融券余额差值(元)"
+      }
+    params = (
+          ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
+          ('sortTypes', '-1'),
+          ('pageSize', '500'),
+          ('sortColumns', 'DATE'),
+          ('source', 'WEB'),
+          ('filter',
+             f"(scode={stock_code})"),
+      )
+    self.get_common_data(url, params, fields, filename)
