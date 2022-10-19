@@ -30,7 +30,7 @@ def to_numeric(func: F) -> F:
 
     """
 
-    ignore = ['股票代码', '基金代码', '代码', '市场类型', '市场编号', '债券代码', '行情ID', '正股代码']
+    ignore = ['code', 'name', '股票代码', '基金代码', '代码', '市场类型', '市场编号', '债券代码', '行情ID', '正股代码']
 
     @wraps(func)
     def run(*args, **kwargs):
@@ -292,6 +292,15 @@ def to_type(f: Callable[[str], T],
         if default is None:
             return value
         return default
+
+def add_stock_sh_sz_bj(stock):
+  if int(stock)<600000:
+    stock = stock + '.SZ'
+  elif int(stock) > 800000:
+    stock = stock + '.BJ'
+  else:
+    stock = stock + '.SH'
+  return stock
 
 
 __all__ = []

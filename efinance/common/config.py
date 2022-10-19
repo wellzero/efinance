@@ -169,8 +169,3 @@ EASTMONEY_BASE_INFO_FIELDS = {
     'f186': '毛利率'
 
 }
-
-EASTMONEY_INDEX_BLOCK_INFO_DIELDS = {
-  'f12': 'code',
-  'f14': 'code_name'
-}

@@ -3,16 +3,18 @@ from jsonpath import jsonpath
 from tqdm import tqdm
 import pandas as pd
 from ..common import get_common_json_nohead
+from ..utils import to_numeric, add_stock_sh_sz_bj
 from datetime import datetime, timedelta
 import numpy as np
 
 
 class push2_98:
-  def __init__(self, path):
+  def __init__(self, path = '/tmp/finance_data'):
     self.path = path
     if not os.path.exists(path):
       os.makedirs(path)
 
+  @to_numeric
   def get_common(self, url, params, fields):
 
     fields_value = ','.join(fields.keys())
@@ -65,11 +67,65 @@ class push2_98:
       ('fid', 'f20'),
       ('fs', 'm:0 t:6,m:0 t:80,m:1 t:2,m:1 t:23,m:0 t:81 s:2048')
       )
-    df = self.get_common(url, params, fields, filename)
+    df = self.get_common(url, params, fields)
 
     if len(df) > 0:
-      df.loc[:,'code'].apply(lambda x: "'" + x)
+      df.loc[:,'code'] = df.loc[:,'code'].apply(lambda x: add_stock_sh_sz_bj(x))
+      df = df[~df.isin(['-'])].dropna()
       df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
     else:
       print("download ", filename, "failed, pls check it!")
       exit(-1)
+    
+    return df
+
+
+  # @to_numeric
+  def get_index_codes(self, index: str):
+  # index
+  # SH index
+  #http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:1+s:2&fields=f12,f14
+  #SZ index
+  #http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:0+t:5&fields=f12,f14
+  # index member
+  #http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:1+s:3,m:0+t:5&fields=f12,f14
+  # china index
+  #http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:2&fields=f12,f14
+    url = 'http://98.push2.eastmoney.com/api/qt/clist/get'
+    fields = { 'f12': 'code', 'f14': 'code_name'}
+    fs_dict = {'sh': 'm:1+s:2', 'sz': 'm:0+t:5', 'sh_sz': 'm:1+s:3,m:0+t:5', 'cn': 'm:2'}
+    params = (
+      ('fs', fs_dict[index]),
+      ('invt', 2),
+      ('fltt', 2),
+      ('np', 1),
+      ('po', 1),
+      ('pz', 2000000),
+      ('pn', 1)
+    )
+    df = self.get_common(url, params, fields)
+    return df
+
+  # @to_numeric
+  def get_block_codes(self, block: str):
+  # block
+  # province
+  #http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:1+f:!50&fields=f12,f14
+  #indurstry
+  #http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:2+f:!50&fields=f12,f14
+  #concept 
+  #http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f12,f14
+    url = 'http://98.push2.eastmoney.com/api/qt/clist/get'
+    fields = { 'f12': 'code', 'f14': 'code_name'}
+    fs_dict = {'province': 'm:90+t:1+f:!50', 'indurstry': 'm:90+t:2+f:!50', 'concept': 'm:90+t:3+f:!50'}
+    params = (
+      ('fs', fs_dict[block]),
+      ('invt', 2),
+      ('fltt', 2),
+      ('np', 1),
+      ('po', 1),
+      ('pz', 2000000),
+      ('pn', 1)
+      )
+    df = self.get_common(url, params, fields)
+    return df

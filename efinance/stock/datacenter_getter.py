@@ -9,13 +9,7 @@ from datetime import datetime, timedelta
 
 class datacenter:
 
-  def __init__(self, path):
-
-    self.path = path
-    if not os.path.exists(path):
-      os.makedirs(path)
-
-  def get_common_data(self, url, params, fields, filename):
+  def get_common_data(self, url, params, fields):
 
     bar: tqdm = None
     dfs: List[pd.DataFrame] = []
@@ -43,14 +37,13 @@ class datacenter:
 
     if(len(dfs) > 0):
       df = pd.concat(dfs, ignore_index=True)
-      if len(df) > 0:
-        df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
+      return df
     else:
       print("download ", filename, "failed, pls check it!")
       exit(-1)
 
 
-  def get_north_acc_net_buy(self, filename = 'nort_acc.csv'):
+  def get_north_acc_net_buy(self):
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {"TRADE_DATE": "date","HNETBUY": "sh_north","SNETBUY":"sz_north","NETBUY": "total"}
@@ -66,7 +59,7 @@ class datacenter:
             ('client', 'WEB'),
             ('sortColumns', 'TRADE_DATE')
     )
-    dfs = self.get_common_data(url, params, fields, filename)
+    return self.get_common_data(url, params, fields)
 
   def get_north_stock_status(self, date='2022-10-17', filename = 'north_stock_status_2022-10-17.csv'):
 
@@ -102,9 +95,9 @@ class datacenter:
              f"(TRADE_DATE='{date}')(INTERVAL_TYPE=1)"),
       )
 
-    self.get_common_data(url, params, fields, filename)
+    return self.get_common_data(url, params, fields)
 
-  def get_north_stock_daily_trade(self, stock_code='600519', filename = 'north_SH600519.csv'):
+  def get_north_stock_daily_trade(self, stock_code='600519'):
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
@@ -131,9 +124,9 @@ class datacenter:
             f" (SECURITY_CODE={stock_code})(TRADE_DATE>='2022-07-16')"),
       )
 
-    self.get_common_data(url, params, fields, filename)
+    return self.get_common_data(url, params, fields)
 
-  def get_margin_short_stock_status(self, date='2022-10-17', filename = 'margin_short_stock_status_2022-10-17.csv'):
+  def get_margin_short_stock_status(self, date='2022-10-17'):
 
     mode = 'auto'
     if date is None:
@@ -169,9 +162,9 @@ class datacenter:
              f"(date='{date}')"),
       )
 
-    self.get_common_data(url, params, fields, filename)
+    return self.get_common_data(url, params, fields)
 
-  def get_margin_short_stock(self, stock_code='600519', filename = 'margin_short_600519.csv'):
+  def get_margin_short_stock(self, stock_code='600519'):
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
@@ -201,4 +194,4 @@ class datacenter:
           ('filter',
              f"(scode={stock_code})"),
       )
-    self.get_common_data(url, params, fields, filename)
+    return self.get_common_data(url, params, fields)

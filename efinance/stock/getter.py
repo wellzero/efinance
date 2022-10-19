@@ -19,8 +19,6 @@ from ..common import get_deal_detail as get_deal_detail_for_stock
 from ..common import get_history_bill as get_history_bill_for_stock
 from ..common import get_quote_history as get_quote_history_for_stock
 from ..common import get_realtime_quotes_by_fs
-from ..common import get_index_codes
-from ..common import get_block_codes
 from ..common import get_today_bill as get_today_bill_for_stock
 from ..common.config import EASTMONEY_REQUEST_HEADERS, FS_DICT, MagicConfig
 from ..common.getter import get_latest_quote as get_latest_quote_for_stock
@@ -29,6 +27,8 @@ from ..utils import (get_quote_id, process_dataframe_and_series, search_quote,
                      to_numeric, to_type)
 from .config import (EASTMONEY_STOCK_BASE_INFO_FIELDS,
                      EASTMONEY_STOCK_DAILY_BILL_BOARD_FIELDS)
+
+from .push2_98_getter import push2_98
 
 signal.signal(signal.SIGINT, multitasking.killall)
 python_version = sys.version_info.major, sys.version_info.minor
@@ -1483,16 +1483,16 @@ def get_belong_board(stock_code: str) -> pd.DataFrame:
     return df
 
 def get_indexs_codes():
-
-  pd_sh = get_index_codes('sh')
-  pd_sz = get_index_codes('sz')
-  pd_sh_sz = get_index_codes('sh_sz')
-  pd_cn = get_index_codes('cn')
+  push2_98_getter = push2_98()
+  pd_sh = push2_98_getter.get_index_codes('sh')
+  pd_sz = push2_98_getter.get_index_codes('sz')
+  pd_sh_sz = push2_98_getter.get_index_codes('sh_sz')
+  pd_cn = push2_98_getter.get_index_codes('cn')
   return [pd_sh, pd_sz, pd_sh_sz, pd_cn]
 
 def get_blocks_codes():
-
-  pd_indurstry = get_block_codes('indurstry')
-  pd_concept = get_block_codes('concept')
-  pd_province = get_block_codes('province')
+  push2_98_getter = push2_98()
+  pd_indurstry = push2_98_getter.get_block_codes('indurstry')
+  pd_concept = push2_98_getter.get_block_codes('concept')
+  pd_province = push2_98_getter.get_block_codes('province')
   return [pd_indurstry, pd_concept, pd_province]
