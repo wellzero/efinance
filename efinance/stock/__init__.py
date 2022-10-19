@@ -7,7 +7,6 @@ from .getter import (get_all_company_performance, get_all_report_dates,
                      get_top10_stock_holder_info,
                      get_indexs_codes, get_blocks_codes)
 
-from .index_block_getter import (get_index_block_data)
 from .datacenter_getter import (datacenter)
 from .push2_98_getter import (push2_98)
 
