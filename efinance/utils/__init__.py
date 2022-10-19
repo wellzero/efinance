@@ -295,11 +295,11 @@ def to_type(f: Callable[[str], T],
 
 def add_stock_sh_sz_bj(stock):
   if int(stock)<600000:
-    stock = stock + '.SZ'
-  elif int(stock) > 800000:
-    stock = stock + '.BJ'
+    stock = 'SZ' + stock
+  elif int(stock) < 800000:
+    stock = 'SH' + stock
   else:
-    stock = stock + '.SH'
+    stock = 'BJ' + stock
   return stock
 
 
