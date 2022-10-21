@@ -61,7 +61,7 @@ class datacenter:
     )
     return self.get_common_data(url, params, fields)
 
-  def get_north_stock_status(self, date='2022-10-17', filename = 'north_stock_status_2022-10-17.csv'):
+  def get_north_stock_status(self, date='2022-10-17'):
 
     mode = 'auto'
     if date is None:
@@ -135,8 +135,8 @@ class datacenter:
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
-        "SECUCODE":"code",
-        "SECNAME":"name",
+        "SECUCODE":"stock_code",
+        "SECNAME":"stock_name",
         "SPJ":"price_close",
         "ZDF":"price_ratio",
         "RZYE":"RZ余额(元)",
@@ -168,8 +168,9 @@ class datacenter:
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
-        "SECUCODE":"code",
-        "SECNAME":"name",
+        "SECUCODE":"stock_code",
+        "SECNAME":"stock_name",
+        "DATE": "date",
         "SPJ":"price_close",
         "ZDF":"price_ratio",
         "RZYE":"RZ余额(元)",
@@ -194,4 +195,7 @@ class datacenter:
           ('filter',
              f"(scode={stock_code})"),
       )
-    return self.get_common_data(url, params, fields)
+    df = self.get_common_data(url, params, fields)
+
+    df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    return df
