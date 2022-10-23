@@ -6,6 +6,13 @@ import efinance as ef
 
 
 datacenter = ef.stock.datacenter_getter.datacenter()
+
+
+big_deal = datacenter.get_stock_big_deal()
+print(big_deal)
+
+north_stock_index = datacenter.get_north_stock_index()
+print(north_stock_index)
 north_acc_net = datacenter.get_north_acc_net_buy()
 print(north_acc_net)
 north_stock_status = datacenter.get_north_stock_status()

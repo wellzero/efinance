@@ -39,8 +39,9 @@ class datacenter:
       df = pd.concat(dfs, ignore_index=True)
       return df
     else:
-      print("download ", filename, "failed, pls check it!")
-      exit(-1)
+      print("download url", url, "param ", param_temp, "failed, pls check it!")
+      return pd.DataFrame()
+      # exit(-1)
 
 
   def get_north_acc_net_buy(self):
@@ -70,6 +71,7 @@ class datacenter:
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
+        "TRADE_DATE":'date',
         "SECUCODE":"stock_code",
         "SECURITY_NAME":"stock_name",
         'CLOSE_PRICE': 'close_price',
@@ -95,7 +97,10 @@ class datacenter:
              f"(TRADE_DATE='{date}')(INTERVAL_TYPE=1)"),
       )
 
-    return self.get_common_data(url, params, fields)
+    df = self.get_common_data(url, params, fields)
+    if len(df):
+      df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
+    return df
 
   def get_north_stock_daily_trade(self, stock_code='600519'):
 
@@ -125,6 +130,44 @@ class datacenter:
       )
 
     return self.get_common_data(url, params, fields)
+
+  def get_north_stock_index(self, date = '2022-10-17'):
+
+    url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
+    fields = {
+        "SECURITY_CODE": "stock_code",
+        "BOARD_NAME":  "stock_name",
+        "TRADE_DATE":  "date",
+        "INDEX_CHANGE_RATIO":  "price_ratio",
+        "COMPOSITION_QUANTITY": "composition_num",
+        "HK_VALUE":  "hk_market_value",
+        "HK_BOARD_RATIO":  "hk_borad_ratio",
+        "BOARD_HK_RATIO":  "nort_money_ratio",
+        "COMPOSITION_QUANTITY_ADD": "add_composition_quantity",
+        "ADD_MARKET_CAP":  "add_market_cap",
+        "ADD_RATIO":  "add_market_ratio",
+        "ADD_BOARD_RATIO": "add_board_ratio",
+        "ADD_HK_RATIO": "add_north_money_ratio"
+      }
+    params = (
+      ("sortColumns", "ADD_MARKET_CAP"),
+      ('sortTypes', '-1'),
+      ('pageSize', '500'),
+      ('reportName', 'RPT_MUTUAL_BOARD_HOLDRANK_WEB'),
+      # ('quoteColumns', 'SECURITY_CODE'),
+      ('quoteColumns', 'f3\~05\~SECURITY_CODE\~INDEX_CHANGE_RATIO'),
+      ('quoteType', '0'),
+      ('source', 'WEB'),
+      ('client', 'WEB'),
+      ('filter',
+             f"((BOARD_TYPE=5)(TRADE_DATE='{date}')(INTERVAL_TYPE=1))")
+    )
+
+    df = self.get_common_data(url, params, fields)
+
+    if len(df):
+      df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
+    return df
 
   def get_margin_short_stock_status(self, date='2022-10-17'):
 
@@ -198,4 +241,37 @@ class datacenter:
     df = self.get_common_data(url, params, fields)
 
     df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    return df
+
+  def get_stock_big_deal(self, stock_code='600519'):
+    
+    url = 'https://datacenter-web.eastmoney.com/api/data/v1/get'
+    fields = {
+      "TRADE_DATE":"date",
+      "SECUCODE":"stock_code",
+      "SECURITY_NAME_ABBR":"stock_name",
+      "CHANGE_RATE": "涨跌幅(0.xx)",
+      "CLOSE_PRICE":"收盘价",
+      "DEAL_PRICE":"成交价",
+      "PREMIUM_RATIO":"折溢率(0.xx)",
+      "DEAL_VOLUME":"成交量(股)",
+      "DISCOUNT_TURNOVER":"成交额",
+      "FREE_SHARES_RATIO":"成交额ratio",
+      "CHANGE_RATE_1DAYS":"1日",
+      "CHANGE_RATE_5DAYS":"5日",
+      "CHANGE_RATE_10DAYS":"10日",
+      "CHANGE_RATE_20DAYS":"20日"}
+    params = (
+          ('reportName', 'RPT_DATA_BLOCKTRADE'),
+          ('sortTypes', '-1,-1'),
+          ('pageSize', '500'),
+          ('sortColumns', 'TRADE_DATE,DEAL_AMT'),
+          ('source', 'WEB'),
+          ('client', 'WEB'),
+          ('filter',
+             f"(SECURITY_CODE={stock_code})"),
+      )
+    df = self.get_common_data(url, params, fields)
+    if len(df):
+      df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
     return df

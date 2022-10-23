@@ -30,7 +30,7 @@ def to_numeric(func: F) -> F:
 
     """
 
-    ignore = ['code', 'name', '股票代码', '基金代码', '代码', '市场类型', '市场编号', '债券代码', '行情ID', '正股代码']
+    ignore = ['stock_code', 'stock_name', '股票代码', '基金代码', '代码', '市场类型', '市场编号', '债券代码', '行情ID', '正股代码']
 
     @wraps(func)
     def run(*args, **kwargs):

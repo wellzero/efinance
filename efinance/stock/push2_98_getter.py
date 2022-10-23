@@ -39,8 +39,8 @@ class push2_98:
   def get_all_stock_status(self, filename = 'stock_status.csv'):
     url = 'http://98.push2.eastmoney.com/api/qt/clist/get'
     fields = {
-      "f12":"code",
-      "f14":"name",
+      "f12":"stock_code",
+      "f14":"stock_name",
       "f2":"price_close",
       "f3":"price_ratio",
       "f4":"price_amp",
@@ -70,7 +70,7 @@ class push2_98:
     df = self.get_common(url, params, fields)
 
     if len(df) > 0:
-      df.loc[:,'code'] = df.loc[:,'code'].apply(lambda x: add_stock_sh_sz_bj(x))
+      df.loc[:,'stock_code'] = df.loc[:,'stock_code'].apply(lambda x: add_stock_sh_sz_bj(x))
       df = df[~df.isin(['-'])].dropna()
       df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
     else:
@@ -92,7 +92,7 @@ class push2_98:
   # china index
   #http://8.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:2&fields=f12,f14
     url = 'http://98.push2.eastmoney.com/api/qt/clist/get'
-    fields = { 'f12': 'code', 'f14': 'code_name'}
+    fields = { 'f12': 'stock_code', 'f14': 'stock_name'}
     fs_dict = {'sh': 'm:1+s:2', 'sz': 'm:0+t:5', 'sh_sz': 'm:1+s:3,m:0+t:5', 'cn': 'm:2'}
     params = (
       ('fs', fs_dict[index]),
@@ -116,7 +116,7 @@ class push2_98:
   #concept 
   #http://98.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000000&po=1&np=1fltt=2&invt=2&fid=f3&fs=m:90+t:3+f:!50&fields=f12,f14
     url = 'http://98.push2.eastmoney.com/api/qt/clist/get'
-    fields = { 'f12': 'code', 'f14': 'code_name'}
+    fields = { 'f12': 'stock_code', 'f14': 'stock_name'}
     fs_dict = {'province': 'm:90+t:1+f:!50', 'indurstry': 'm:90+t:2+f:!50', 'concept': 'm:90+t:3+f:!50'}
     params = (
       ('fs', fs_dict[block]),
