@@ -9,10 +9,6 @@ import numpy as np
 
 
 class push2_98:
-  def __init__(self, path = '/tmp/finance_data'):
-    self.path = path
-    if not os.path.exists(path):
-      os.makedirs(path)
 
   @to_numeric
   def get_common(self, url, params, fields):
@@ -72,10 +68,9 @@ class push2_98:
     if len(df) > 0:
       df.loc[:,'stock_code'] = df.loc[:,'stock_code'].apply(lambda x: add_stock_sh_sz_bj(x))
       df = df[~df.isin(['-'])].dropna()
-      df.to_csv(os.path.join(self.path, filename), encoding='gbk', index=False)
     else:
       print("download ", filename, "failed, pls check it!")
-      exit(-1)
+      df = pd.DataFrame()
     
     return df
 

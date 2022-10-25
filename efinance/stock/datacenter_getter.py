@@ -62,7 +62,7 @@ class datacenter:
     )
     return self.get_common_data(url, params, fields)
 
-  def get_north_stock_status(self, date='2022-10-17'):
+  def get_north_stock_status(self, date='2022-10-17', board_type = 'unused'):
 
     mode = 'auto'
     if date is None:
@@ -131,7 +131,7 @@ class datacenter:
 
     return self.get_common_data(url, params, fields)
 
-  def get_north_stock_index(self, date = '2022-10-17'):
+  def get_north_stock_index(self, date = '2022-10-17', board_type = 5):
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
@@ -160,7 +160,7 @@ class datacenter:
       ('source', 'WEB'),
       ('client', 'WEB'),
       ('filter',
-             f"((BOARD_TYPE=5)(TRADE_DATE='{date}')(INTERVAL_TYPE=1))")
+             f"((BOARD_TYPE={board_type})(TRADE_DATE='{date}')(INTERVAL_TYPE=1))")
     )
 
     df = self.get_common_data(url, params, fields)
