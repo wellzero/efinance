@@ -62,8 +62,11 @@ def to_numeric(func: F) -> F:
 
 
 # 存储证券代码的实体
-Quote = namedtuple('Quote', ['date','code', 'name', 'pinyin', 'id', 'jys', 'classify', 'market_type',
+Quote = namedtuple('Quote', ['code', 'name', 'pinyin', 'id', 'jys', 'classify', 'market_type',
                    'security_typeName', 'security_type', 'mkt_num', 'type_us', 'quote_id', 'unified_code', 'inner_code'])
+
+# Quote = namedtuple('Quote', ['Code', 'Name', 'PinYin', 'ID', 'JDS', 'Classify', 'MarketType',
+#                    'SecuritytypeName', 'SecurityType', 'MktNum', 'TypeUS', 'QuoteID', 'UnifiedCode', 'InnerCode'])
 
 
 @retry(tries=3, delay=1)
