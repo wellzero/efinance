@@ -32,7 +32,7 @@ class push2his:
 
     return df
 
-  def get_sourth_status(self, filename = 'stock_status.csv'):
+  def get_sourth_acc_buy(self, filename = 'stock_status.csv'):
     url = 'https://push2his.eastmoney.com/api/qt/kamt.kline/get'
     fields1 = {
       "f6":"n2s"

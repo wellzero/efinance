@@ -60,7 +60,13 @@ class datacenter:
             ('client', 'WEB'),
             ('sortColumns', 'TRADE_DATE')
     )
-    return self.get_common_data(url, params, fields)
+
+    df = self.get_common_data(url, params, fields)
+
+    if len(df):
+      df = df.sort_values(by=['date'], ascending=False)
+      df['date'] = df['date'].apply(lambda x : x[0:10])
+    return df
 
   def get_north_stock_status(self, date='2022-10-17', board_type = 'unused'):
 
@@ -129,7 +135,12 @@ class datacenter:
             f" (SECURITY_CODE={stock_code})(TRADE_DATE>='2022-07-16')"),
       )
 
-    return self.get_common_data(url, params, fields)
+    df = self.get_common_data(url, params, fields)
+
+    if len(df):
+      df = df.sort_values(by=['date'], ascending=False)
+      # df[fields['date']] = df['date'].apply(lambda x : x[0:10])
+    return df
 
   def get_north_stock_index(self, date = '2022-10-17', board_type = 5):
 
@@ -165,8 +176,11 @@ class datacenter:
 
     df = self.get_common_data(url, params, fields)
 
+    # if len(df):
+    #   df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
     if len(df):
-      df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
+      df = df.sort_values(by=['date'], ascending=False)
+      df['date'] = df['date'].apply(lambda x : x[0:10])
     return df
 
   def get_margin_short_stock_status(self, date='2022-10-17'):
@@ -216,6 +230,46 @@ class datacenter:
         "DATE": "date",
         "SPJ":"price_close",
         "ZDF":"price_ratio",
+        "RZYE":"RZ余额(亿)",
+        "RZYEZB":"RZ余额占流通市值比",
+        "RZMRE":"RZ买入额(亿)",
+        "RZCHE":"RZ偿还额(亿)",
+        "RZJME":"RZ净买入(亿)",
+        "RQYE":"RQ余额(亿)",
+        "RQYL":"RQ余量(股)",
+        "RQMCL":"RQ卖出量(股)",
+        "RQCHL":"RQ偿还量(股)",
+        "RQJMG":"RQ净卖出(股)",
+        "RZRQYE":"RQ融资融券余额(亿)",
+        "RZRQYECZ":"RQ融资融券余额差值(亿)"
+      }
+    params = (
+          ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
+          ('sortTypes', '-1'),
+          ('pageSize', '500'),
+          ('sortColumns', 'DATE'),
+          ('source', 'WEB'),
+          ('filter',
+             f"(scode={stock_code})"),
+      )
+    df = self.get_common_data(url, params, fields)
+
+    # df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    if len(df):
+      df = df.sort_values(by=['date'], ascending=False)
+      df.iloc[:, 5:] = df.iloc[:, 5:].applymap(lambda x: x/1E8)
+      df.iloc[:, 3] = df.iloc[:, 3].apply(lambda x: x/1E8)
+      df['date'] = df['date'].apply(lambda x : x[0:10])
+    return df
+
+
+  def get_margin_short_total(self):
+
+    url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
+    fields = {
+        "DIM_DATE":"date",
+        "NEW":"收盘沪深300",
+        "ZDF":"price_ratio",
         "RZYE":"RZ余额(元)",
         "RZYEZB":"RZ余额占流通市值比",
         "RZMRE":"RZ买入额(元)",
@@ -230,17 +284,21 @@ class datacenter:
         "RZRQYECZ":"RQ融资融券余额差值(元)"
       }
     params = (
-          ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
+          ('reportName', 'RPTA_RZRQ_LSHJ'),
           ('sortTypes', '-1'),
           ('pageSize', '500'),
-          ('sortColumns', 'DATE'),
+          ('sortColumns', 'dim_date'),
           ('source', 'WEB'),
-          ('filter',
-             f"(scode={stock_code})"),
+          ('filter', ''),
       )
     df = self.get_common_data(url, params, fields)
 
-    df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    # df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    if len(df):
+      df = df.sort_values(by=['date'], ascending=False)
+      df.iloc[:, 5:] = df.iloc[:, 5:].applymap(lambda x: x/1E8)
+      df.iloc[:, 3] = df.iloc[:, 3].apply(lambda x: x/1E8)
+      df['date'] = df['date'].apply(lambda x : x[0:10])
     return df
 
   def get_stock_big_deal(self, stock_code='600519'):
@@ -273,5 +331,6 @@ class datacenter:
       )
     df = self.get_common_data(url, params, fields)
     if len(df):
-      df[fields["TRADE_DATE"]] = df[fields["TRADE_DATE"]].apply(lambda x : x[0:10])
+      df = df.sort_values(by=['date'], ascending=False)
+      df['date'] = df['date'].apply(lambda x : x[0:10])
     return df
