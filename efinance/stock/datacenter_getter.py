@@ -196,18 +196,18 @@ class datacenter:
         "SECNAME":"stock_name",
         "SPJ":"price_close",
         "ZDF":"price_ratio",
-        "RZYE":"RZ余额(元)",
+        "RZYE":"RZ余额(亿元)",
         "RZYEZB":"RZ余额占流通市值比",
-        "RZMRE":"RZ买入额(元)",
-        "RZCHE":"RZ偿还额(元)",
-        "RZJME":"RZ净买入(元)",
-        "RQYE":"RQ余额(元",
-        "RQYL":"RQ余量(股)",
-        "RQMCL":"RQ卖出量(股)",
-        "RQCHL":"RQ偿还量(股)",
-        "RQJMG":"RQ净卖出(股)",
-        "RZRQYE":"RQ融资融券余额(元)",
-        "RZRQYECZ":"RQ融资融券余额差值(元)"
+        "RZMRE":"RZ买入额(亿元)",
+        "RZCHE":"RZ偿还额(亿元)",
+        "RZJME":"RZ净买入(亿元)",
+        "RQYE":"RQ余额(亿股)",
+        "RQYL":"RQ余量(亿股)",
+        "RQMCL":"RQ卖出量(亿股)",
+        "RQCHL":"RQ偿还量(亿股)",
+        "RQJMG":"RQ净卖出(亿股)",
+        "RZRQYE":"RQ融资融券余额(亿元)",
+        "RZRQYECZ":"RQ融资融券余额差值(亿元)"
       }
     params = (
           ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
@@ -219,7 +219,14 @@ class datacenter:
              f"(date='{date}')"),
       )
 
-    return self.get_common_data(url, params, fields)
+    df = self.get_common_data(url, params, fields)
+
+    # df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
+    if len(df):
+      df = df.sort_values(by=['date'], ascending=False)
+      df.iloc[:, 5:] = df.iloc[:, 6:].applymap(lambda x: x/1E8)
+      df.iloc[:, 4] = df.iloc[:, 4].apply(lambda x: x/1E8)
+    return df
 
   def get_margin_short_stock(self, stock_code='600519'):
 
@@ -230,18 +237,18 @@ class datacenter:
         "DATE": "date",
         "SPJ":"price_close",
         "ZDF":"price_ratio",
-        "RZYE":"RZ余额(亿)",
+        "RZYE":"RZ余额(亿元)",
         "RZYEZB":"RZ余额占流通市值比",
-        "RZMRE":"RZ买入额(亿)",
-        "RZCHE":"RZ偿还额(亿)",
-        "RZJME":"RZ净买入(亿)",
-        "RQYE":"RQ余额(亿)",
-        "RQYL":"RQ余量(股)",
-        "RQMCL":"RQ卖出量(股)",
-        "RQCHL":"RQ偿还量(股)",
-        "RQJMG":"RQ净卖出(股)",
-        "RZRQYE":"RQ融资融券余额(亿)",
-        "RZRQYECZ":"RQ融资融券余额差值(亿)"
+        "RZMRE":"RZ买入额(亿元)",
+        "RZCHE":"RZ偿还额(亿元)",
+        "RZJME":"RZ净买入(亿元)",
+        "RQYE":"RQ余额(亿元)",
+        "RQYL":"RQ余量(亿股)",
+        "RQMCL":"RQ卖出量(亿股)",
+        "RQCHL":"RQ偿还量(亿股)",
+        "RQJMG":"RQ净卖出(亿股)",
+        "RZRQYE":"RQ融资融券余额(亿元)",
+        "RZRQYECZ":"RQ融资融券余额差值(亿元)"
       }
     params = (
           ('reportName', 'RPTA_WEB_RZRQ_GGMX'),
@@ -270,18 +277,18 @@ class datacenter:
         "DIM_DATE":"date",
         "NEW":"收盘沪深300",
         "ZDF":"price_ratio",
-        "RZYE":"RZ余额(元)",
+        "RZYE":"RZ余额(亿元)",
         "RZYEZB":"RZ余额占流通市值比",
-        "RZMRE":"RZ买入额(元)",
-        "RZCHE":"RZ偿还额(元)",
-        "RZJME":"RZ净买入(元)",
-        "RQYE":"RQ余额(元",
-        "RQYL":"RQ余量(股)",
-        "RQMCL":"RQ卖出量(股)",
-        "RQCHL":"RQ偿还量(股)",
-        "RQJMG":"RQ净卖出(股)",
-        "RZRQYE":"RQ融资融券余额(元)",
-        "RZRQYECZ":"RQ融资融券余额差值(元)"
+        "RZMRE":"RZ买入额(亿元)",
+        "RZCHE":"RZ偿还额(亿元)",
+        "RZJME":"RZ净买入(亿元)",
+        "RQYE":"RQ余额(亿元)",
+        "RQYL":"RQ余量(亿股)",
+        "RQMCL":"RQ卖出量(亿股)",
+        "RQCHL":"RQ偿还量(亿股)",
+        "RQJMG":"RQ净卖出(亿股)",
+        "RZRQYE":"RQ融资融券余额(亿元)",
+        "RZRQYECZ":"RQ融资融券余额差值(亿元)"
       }
     params = (
           ('reportName', 'RPTA_RZRQ_LSHJ'),

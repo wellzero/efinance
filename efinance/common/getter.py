@@ -94,7 +94,8 @@ def get_quote_history_single(code: str,
     fields = list(EASTMONEY_KLINE_FIELDS.keys())
     columns = list(EASTMONEY_KLINE_FIELDS.values())
     fields2 = ",".join(fields)
-    if kwargs.get(MagicConfig.QUOTE_ID_MODE):
+    # if kwargs.get(MagicConfig.QUOTE_ID_MODE):
+    if code.find('.') > 0:
         quote_id = code
     else:
         quote_id = get_quote_id(code)

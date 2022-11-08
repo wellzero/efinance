@@ -258,6 +258,7 @@ def get_quote_history(stock_codes: Union[str, List[str]],
                                            '名称': '股票名称'
                                            },
                                   inplace=True)
+    df = df.sort_values(by=['日期'], ascending=False)
     return df
 
 

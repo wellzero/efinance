@@ -11,6 +11,7 @@ from .datacenter_getter import (datacenter)
 from .push2_98_getter import (push2_98)
 from .push2his_getter import (push2his)
 from .north_south_getter import (north_south)
+from .money_flow_getter import (money_flow)
 
 __all__ = ['get_history_bill',
            'get_today_bill',
