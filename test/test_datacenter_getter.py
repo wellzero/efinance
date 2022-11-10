@@ -7,14 +7,14 @@ import efinance as ef
 
 datacenter = ef.stock.datacenter_getter.datacenter()
 
-magin_short_total = datacenter.get_margin_short_total()
-print(magin_short_total)
+# magin_short_total = datacenter.get_margin_short_total()
+# print(magin_short_total)
 
 # big_deal = datacenter.get_stock_big_deal()
 # print(big_deal)
 
-# north_stock_index = datacenter.get_north_stock_index()
-# print(north_stock_index)
+north_stock_index = datacenter.get_north_stock_index()
+print(north_stock_index)
 # north_acc_net = datacenter.get_north_acc_net_buy()
 # print(north_acc_net)
 # north_stock_status = datacenter.get_north_stock_status()
@@ -25,5 +25,5 @@ print(magin_short_total)
 
 # margin_short_stock_status = datacenter.get_margin_short_stock_status()
 # print(margin_short_stock_status)
-margin_short_stock = datacenter.get_margin_short_stock()
-print(margin_short_stock)
+# margin_short_stock = datacenter.get_margin_short_stock()
+# print(margin_short_stock)

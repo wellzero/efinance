@@ -245,6 +245,7 @@ def get_quote_history(stock_codes: Union[str, List[str]],
 
         df.rename(columns={
                            '名称': '股票名称',
+                           '代码': '股票代码',
                            '开盘': '开盘价',
                            '收盘': '收盘价',
                            '最高': '最高价',
@@ -254,7 +255,7 @@ def get_quote_history(stock_codes: Union[str, List[str]],
                   inplace=True)
     elif isinstance(df, dict):
         for stock_code in df.keys():
-            df[stock_code].rename(columns={'代码': '代码',
+            df[stock_code].rename(columns={'代码': '股票代码',
                                            '名称': '股票名称'
                                            },
                                   inplace=True)
