@@ -10,26 +10,11 @@ import numpy as np
 
 from ..common.config import MARKET_NUMBER_DICT
 from ..shared import BASE_INFO_CACHE, session
-from ..utils import get_quote_id, to_numeric
+from ..utils import get_quote_id, to_numeric, get_common_json_head, get_common_json_nohead
 from .config import (EASTMONEY_BASE_INFO_FIELDS, EASTMONEY_HISTORY_BILL_FIELDS,
                      EASTMONEY_KLINE_FIELDS, EASTMONEY_KLINE_NDAYS_FIELDS,
                      EASTMONEY_QUOTE_FIELDS, EASTMONEY_REQUEST_HEADERS,
                      MagicConfig)
-
-DELAY = 50
-
-@retry(tries=-1, delay=DELAY)
-def get_common_json_head(url, head, para):
-    json_response = session.get(url,
-                                headers=head,
-                                params=para).json()
-    return json_response
-
-@retry(tries=-1, delay=DELAY)
-def get_common_json_nohead(url, params):
-    json_response = session.get(url,
-                                params=params).json()
-    return json_response
 
 @to_numeric
 def get_realtime_quotes_by_fs(fs: str,
@@ -61,9 +46,10 @@ def get_realtime_quotes_by_fs(fs: str,
         ('fields', fields)
     )
     url = 'http://push2.eastmoney.com/api/qt/clist/get'
-    json_response = session.get(url,
-                                headers=EASTMONEY_REQUEST_HEADERS,
-                                params=params).json()
+    # json_response = session.get(url,
+    #                             headers=EASTMONEY_REQUEST_HEADERS,
+    #                             params=params).json()
+    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
     df = pd.DataFrame(json_response['data']['diff'])
     df = df.rename(columns=columns)
     df: pd.DataFrame = df[columns.values()]
@@ -112,8 +98,9 @@ def get_quote_history_single(code: str,
 
     url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
 
-    json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params).json()
+    # json_response = session.get(
+    #     url, headers=EASTMONEY_REQUEST_HEADERS, params=params).json()
+    json_response = get_common_json_nohead(url, params)
     klines: List[str] = jsonpath(json_response, '$..klines[:]')
     if not klines:
         columns.insert(0, '代码')
@@ -128,6 +115,59 @@ def get_quote_history_single(code: str,
     df.insert(0, '名称', name)
 
     return df
+
+
+@to_numeric
+def get_quote_history_single_new(code: str,
+                             beg: str = '19000101',
+                             end: str = '20500101',
+                             klt: int = 101,
+                             fqt: int = 1,
+                             **kwargs) -> pd.DataFrame:
+    """
+    获取单只股票、债券 K 线数据
+
+    """
+
+    fields = list(EASTMONEY_KLINE_FIELDS.keys())
+    columns = list(EASTMONEY_KLINE_FIELDS.values())
+    fields2 = ",".join(fields)
+    # if kwargs.get(MagicConfig.QUOTE_ID_MODE):
+    if code.find('.') > 0:
+        quote_id = code
+    else:
+        quote_id = get_quote_id(code)
+    params = (
+        ('fields1', 'f1,f2,f3,f4,f5,f6'),
+        ('fields2', fields2),
+        ('ut', 'fa5fd1943c7b386f172d6893dbfba10b'),
+        ('end', end),
+        ('secid', quote_id),
+        ('klt', f'{klt}'),
+        ('fqt', f'{fqt}'),
+        ('lmt', 60000000),
+    )
+
+    url = 'https://18.push2his.eastmoney.com/api/qt/stock/kline/get'
+
+    # json_response = session.get(
+    #     url, headers=EASTMONEY_REQUEST_HEADERS, params=params).json()
+    json_response = get_common_json_nohead(url, params)
+    klines: List[str] = jsonpath(json_response, '$..klines[:]')
+    if not klines:
+        columns.insert(0, '代码')
+        columns.insert(0, '名称')
+        return pd.DataFrame(columns=columns)
+
+    rows = [kline.split(',') for kline in klines]
+    name = json_response['data']['name']
+    code = quote_id.split('.')[-1]
+    df = pd.DataFrame(rows, columns=columns)
+    df.insert(0, '代码', code)
+    df.insert(0, '名称', name)
+
+    return df
+
 
 
 def get_quote_history_multi(codes: List[str],
@@ -267,9 +307,10 @@ def get_history_bill(code: str) -> pd.DataFrame:
 
     )
     url = 'http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get'
-    json_response = session.get(url,
-                                headers=EASTMONEY_REQUEST_HEADERS,
-                                params=params).json()
+    # json_response = session.get(url,
+    #                             headers=EASTMONEY_REQUEST_HEADERS,
+    #                             params=params).json()
+    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
 
     klines: List[str] = jsonpath(json_response, '$..klines[:]')
     if not klines:
@@ -311,9 +352,10 @@ def get_today_bill(code: str) -> pd.DataFrame:
         ('fields2', 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63'),
     )
     url = 'http://push2.eastmoney.com/api/qt/stock/fflow/kline/get'
-    json_response = session.get(url,
-                                headers=EASTMONEY_REQUEST_HEADERS,
-                                params=params).json()
+    # json_response = session.get(url,
+    #                             headers=EASTMONEY_REQUEST_HEADERS,
+    #                             params=params).json()
+    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
     columns = ['时间', '主力净流入', '小单净流入', '中单净流入', '大单净流入', '超大单净流入']
     name = jsonpath(json_response, '$..name')[0]
     code = quote_id.split('.')[-1]
@@ -341,9 +383,10 @@ def get_base_info(quote_id: str) -> pd.Series:
         ('secid', quote_id)
     )
     url = 'http://push2.eastmoney.com/api/qt/stock/get'
-    json_response = session.get(url,
-                                headers=EASTMONEY_REQUEST_HEADERS,
-                                params=params).json()
+    # json_response = session.get(url,
+    #                             headers=EASTMONEY_REQUEST_HEADERS,
+    #                             params=params).json()
+    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
     items = json_response['data']
     if not items:
         return pd.Series(index=EASTMONEY_BASE_INFO_FIELDS.values(), dtype='object')
@@ -389,8 +432,10 @@ def get_deal_detail(quote_id: str,
         ('pos', f'-{int(max_count)}')
     )
 
-    response = session.get(
-        'https://push2.eastmoney.com/api/qt/stock/details/get', params=params)
+    # response = session.get(
+    #     'https://push2.eastmoney.com/api/qt/stock/details/get', params=params)
+    url = 'https://push2.eastmoney.com/api/qt/stock/details/get'
+    response = get_common_json_nohead(url, params)
 
     js: dict = response.json()
     lines: List[str] = js['data']['details']
@@ -449,9 +494,10 @@ def get_latest_quote(quote_id_list: Union[str, List[str]],
         ('version', '6.3.8'),
     )
     url = 'https://push2.eastmoney.com/api/qt/ulist.np/get'
-    json_response = session.get(url,
-                                headers=EASTMONEY_REQUEST_HEADERS,
-                                params=params).json()
+    # json_response = session.get(url,
+    #                             headers=EASTMONEY_REQUEST_HEADERS,
+    #                             params=params).json()
+    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
     rows = jsonpath(json_response, '$..diff[:]')
     if not rows:
         df = pd.DataFrame(columns=columns.values())
@@ -505,8 +551,10 @@ def get_latest_ndays_quote(code: str,
         ('secid', quote_id),
     )
 
-    json_response = session.get('http://push2his.eastmoney.com/api/qt/stock/trends2/get',
-                                params=params).json()
+    # json_response = session.get('http://push2his.eastmoney.com/api/qt/stock/trends2/get',
+    #                             params=params).json()
+    url = 'http://push2his.eastmoney.com/api/qt/stock/trends2/get'
+    json_response = get_common_json_head(url, params)
 
     klines: List[str] = jsonpath(json_response, '$..trends[:]')
     if not klines:

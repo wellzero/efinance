@@ -305,5 +305,20 @@ def add_stock_sh_sz_bj(stock):
     stock = 'BJ' + stock
   return stock
 
+DELAY = 50
+
+@retry(tries=-1, delay=DELAY)
+def get_common_json_head(url, head, para):
+    json_response = session.get(url,
+                                headers=head,
+                                params=para).json()
+    return json_response
+
+@retry(tries=-1, delay=DELAY)
+def get_common_json_nohead(url, params):
+    json_response = session.get(url,
+                                params=params).json()
+    return json_response
+
 
 __all__ = []

@@ -57,3 +57,41 @@ class push2his:
       df = pd.DataFram()
     
     return df
+
+  # def get_block_daily_trade(self, block_code):
+  #   url = 'https://18.push2his.eastmoney.com/api/qt/stock/kline/get'
+  #   fields1 = {
+  #     "f1":"n2s",
+  #     "f2":"n2s",
+  #     "f3":"n2s",
+  #     "f4":"n2s",
+  #     "f5":"n2s",
+  #     "f6":"n2s"
+  #   }
+  #   fields2 = {
+  #     "f51":"date",
+  #     "f52":"flow_in(万)",
+  #     "f53":"flow_margin(万)",
+  #     "f54":"acc_flow_in(万)",
+  #     "f55":"acc_flow_in(万)",
+  #     "f56":"acc_flow_in(万)",
+  #     "f57":"acc_flow_in(万)",
+  #     "f58":"acc_flow_in(万)",
+  #     "f59":"acc_flow_in(万)",
+  #     "f60":"acc_flow_in(万)",
+  #     "f61":"acc_flow_in(万)",
+  #   }
+  #   params = (
+  #     ('ut', 'b2884a393a59ad64002292a3e90d46a5'),
+  #     ('klt', '101')
+  #     )
+  #   df = self.get_common(url, params, fields1, fields2, fields1['f6'])
+
+  #   if len(df) > 0:
+  #     df = df[~df.isin(['-'])].dropna()
+  #     df = df.sort_values(by=['date'], ascending=False)
+  #   else:
+  #     print("download ", filename, "failed, pls check it!")
+  #     df = pd.DataFram()
+    
+  #   return df

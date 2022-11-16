@@ -37,6 +37,10 @@ class datacenter:
 
     if(len(dfs) > 0):
       df = pd.concat(dfs, ignore_index=True)
+      df = df.replace('--', 0)
+      df = df.replace('_', 0)
+      df = df.replace('None', 0)
+      df = df.fillna(0)
       return df
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
@@ -196,6 +200,7 @@ class datacenter:
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
+        "DATE": 'date',
         "SECUCODE":"stock_code",
         "SECNAME":"stock_name",
         "SPJ":"price_close",
@@ -228,15 +233,15 @@ class datacenter:
     # df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
     if len(df):
       df = df.sort_values(by=['date'], ascending=False)
-      df.iloc[:, 5:] = df.iloc[:, 6:].applymap(lambda x: x/1E8)
-      df.iloc[:, 4] = df.iloc[:, 4].apply(lambda x: x/1E8)
+      df.iloc[:, 7:] = df.iloc[:, 7:].applymap(lambda x: x/1E8)
+      df.iloc[:, 5] = df.iloc[:, 5].apply(lambda x: x/1E8)
     return df
 
   def get_margin_short_stock(self, stock_code='600519'):
 
     url = 'http://datacenter-web.eastmoney.com/api/data/v1/get'
     fields = {
-        "SECUCODE":"stock_code",
+        "SCODE":"stock_code",
         "SECNAME":"stock_name",
         "DATE": "date",
         "SPJ":"price_close",
@@ -268,7 +273,8 @@ class datacenter:
     # df[fields["DATE"]] = df[fields["DATE"]].apply(lambda x : x[0:10])
     if len(df):
       df = df.sort_values(by=['date'], ascending=False)
-      df.iloc[:, 5:] = df.iloc[:, 5:].applymap(lambda x: x/1E8)
+      # print(df)
+      df.iloc[:, 5:] = df.iloc[:, 5:].applymap(lambda x: float(x)/1E8)
       df.iloc[:, 3] = df.iloc[:, 3].apply(lambda x: x/1E8)
       df['date'] = df['date'].apply(lambda x : x[0:10])
     return df
