@@ -3,7 +3,7 @@ from jsonpath import jsonpath
 from tqdm import tqdm
 import pandas as pd
 from ..common import get_common_json
-from ..utils import to_numeric, add_stock_sh_sz_bj
+from ..utils import to_numeric 
 from datetime import datetime, timedelta
 import numpy as np
 
@@ -66,7 +66,6 @@ class push2_98:
     df = self.get_common(url, params, fields)
 
     if len(df) > 0:
-      # df.loc[:,'stock_code'] = df.loc[:,'stock_code'].apply(lambda x: add_stock_sh_sz_bj(x))
       df = df[~df.isin(['-'])].dropna()
     else:
       print("download ", filename, "failed, pls check it!")

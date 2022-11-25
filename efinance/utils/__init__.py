@@ -296,15 +296,6 @@ def to_type(f: Callable[[str], T],
             return value
         return default
 
-def add_stock_sh_sz_bj(stock):
-  if int(stock)<600000:
-    stock = 'SZ' + stock
-  elif int(stock) < 800000:
-    stock = 'SH' + stock
-  else:
-    stock = 'BJ' + stock
-  return stock
-
 DELAY = 50
 
 @retry(tries=-1, delay=DELAY)
