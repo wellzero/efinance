@@ -10,7 +10,7 @@ import numpy as np
 
 from ..common.config import MARKET_NUMBER_DICT
 from ..shared import BASE_INFO_CACHE, session
-from ..utils import get_quote_id, to_numeric, get_common_json_head, get_common_json_nohead
+from ..utils import get_quote_id, to_numeric, get_common_json
 from .config import (EASTMONEY_BASE_INFO_FIELDS, EASTMONEY_HISTORY_BILL_FIELDS,
                      EASTMONEY_KLINE_FIELDS, EASTMONEY_KLINE_NDAYS_FIELDS,
                      EASTMONEY_QUOTE_FIELDS, EASTMONEY_REQUEST_HEADERS,
@@ -49,7 +49,7 @@ def get_realtime_quotes_by_fs(fs: str,
     # json_response = session.get(url,
     #                             headers=EASTMONEY_REQUEST_HEADERS,
     #                             params=params).json()
-    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
+    json_response = get_common_json(url, params, EASTMONEY_REQUEST_HEADERS)
     df = pd.DataFrame(json_response['data']['diff'])
     df = df.rename(columns=columns)
     df: pd.DataFrame = df[columns.values()]
@@ -100,7 +100,7 @@ def get_quote_history_single(code: str,
 
     # json_response = session.get(
     #     url, headers=EASTMONEY_REQUEST_HEADERS, params=params).json()
-    json_response = get_common_json_nohead(url, params)
+    json_response = get_common_json(url, params)
     klines: List[str] = jsonpath(json_response, '$..klines[:]')
     if not klines:
         columns.insert(0, '代码')
@@ -152,7 +152,7 @@ def get_quote_history_single_new(code: str,
 
     # json_response = session.get(
     #     url, headers=EASTMONEY_REQUEST_HEADERS, params=params).json()
-    json_response = get_common_json_nohead(url, params)
+    json_response = get_common_json(url, params)
     klines: List[str] = jsonpath(json_response, '$..klines[:]')
     if not klines:
         columns.insert(0, '代码')
@@ -310,7 +310,8 @@ def get_history_bill(code: str) -> pd.DataFrame:
     # json_response = session.get(url,
     #                             headers=EASTMONEY_REQUEST_HEADERS,
     #                             params=params).json()
-    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
+    # json_response = get_common_json(url, params, EASTMONEY_REQUEST_HEADERS)
+    json_response = get_common_json(url, params)
 
     klines: List[str] = jsonpath(json_response, '$..klines[:]')
     if not klines:
@@ -355,7 +356,7 @@ def get_today_bill(code: str) -> pd.DataFrame:
     # json_response = session.get(url,
     #                             headers=EASTMONEY_REQUEST_HEADERS,
     #                             params=params).json()
-    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
+    json_response = get_common_json(url, params, EASTMONEY_REQUEST_HEADERS)
     columns = ['时间', '主力净流入', '小单净流入', '中单净流入', '大单净流入', '超大单净流入']
     name = jsonpath(json_response, '$..name')[0]
     code = quote_id.split('.')[-1]
@@ -386,7 +387,7 @@ def get_base_info(quote_id: str) -> pd.Series:
     # json_response = session.get(url,
     #                             headers=EASTMONEY_REQUEST_HEADERS,
     #                             params=params).json()
-    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
+    json_response = get_common_json(url, params, EASTMONEY_REQUEST_HEADERS)
     items = json_response['data']
     if not items:
         return pd.Series(index=EASTMONEY_BASE_INFO_FIELDS.values(), dtype='object')
@@ -435,7 +436,7 @@ def get_deal_detail(quote_id: str,
     # response = session.get(
     #     'https://push2.eastmoney.com/api/qt/stock/details/get', params=params)
     url = 'https://push2.eastmoney.com/api/qt/stock/details/get'
-    response = get_common_json_nohead(url, params)
+    response = get_common_json(url, params)
 
     js: dict = response.json()
     lines: List[str] = js['data']['details']
@@ -497,7 +498,7 @@ def get_latest_quote(quote_id_list: Union[str, List[str]],
     # json_response = session.get(url,
     #                             headers=EASTMONEY_REQUEST_HEADERS,
     #                             params=params).json()
-    json_response = get_common_json_head(url, params, EASTMONEY_REQUEST_HEADERS)
+    json_response = get_common_json(url, params, EASTMONEY_REQUEST_HEADERS)
     rows = jsonpath(json_response, '$..diff[:]')
     if not rows:
         df = pd.DataFrame(columns=columns.values())
@@ -554,7 +555,7 @@ def get_latest_ndays_quote(code: str,
     # json_response = session.get('http://push2his.eastmoney.com/api/qt/stock/trends2/get',
     #                             params=params).json()
     url = 'http://push2his.eastmoney.com/api/qt/stock/trends2/get'
-    json_response = get_common_json_head(url, params)
+    json_response = get_common_json(url, params)
 
     klines: List[str] = jsonpath(json_response, '$..trends[:]')
     if not klines:

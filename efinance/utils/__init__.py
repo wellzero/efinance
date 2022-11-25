@@ -308,17 +308,15 @@ def add_stock_sh_sz_bj(stock):
 DELAY = 50
 
 @retry(tries=-1, delay=DELAY)
-def get_common_json_head(url, head, para):
-    json_response = session.get(url,
-                                headers=head,
-                                params=para).json()
-    return json_response
-
-@retry(tries=-1, delay=DELAY)
-def get_common_json_nohead(url, params):
+def get_common_json(url, params, head = "default"):
+    
+  if (head == "default"):
     json_response = session.get(url,
                                 params=params).json()
-    return json_response
-
+  else:
+    json_response = session.get(url,
+                                headers=head,
+                                params=params).json()
+  return json_response
 
 __all__ = []

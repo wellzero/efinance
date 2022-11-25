@@ -2,7 +2,7 @@ import os
 from jsonpath import jsonpath
 from tqdm import tqdm
 import pandas as pd
-from ..common import get_common_json_nohead
+from ..common import get_common_json
 
 def datacenter_get_data(url, params, fields):
 
@@ -13,7 +13,7 @@ def datacenter_get_data(url, params, fields):
   columns = ','.join(list(fields.keys()))
   while 1:
       param_temp = (('pageNumber', page), ('columns', columns)) + params
-      response = get_common_json_nohead(url, param_temp)
+      response = get_common_json(url, param_temp)
       if bar is None:
           pages = jsonpath(response, '$..pages')
 

@@ -2,7 +2,7 @@ import os
 from jsonpath import jsonpath
 from tqdm import tqdm
 import pandas as pd
-from ..common import get_common_json_nohead
+from ..common import get_common_json
 from ..utils import to_numeric, add_stock_sh_sz_bj
 from datetime import datetime, timedelta
 import numpy as np
@@ -16,7 +16,7 @@ class push2_98:
     fields_value = ','.join(fields.keys())
     params_temp = (('pz', 5000000), ('fields', fields_value)) + params
 
-    json_response = get_common_json_nohead(url,
+    json_response = get_common_json(url,
                                 params=params_temp)
     datas = json_response['data']['diff']
     keys = datas[1].keys()

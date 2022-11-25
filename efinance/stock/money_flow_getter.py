@@ -3,7 +3,7 @@ import time
 from jsonpath import jsonpath
 from tqdm import tqdm
 import pandas as pd
-from ..common import get_common_json_nohead
+from ..common import get_common_json
 from ..utils import to_numeric
 import numpy as np
 
@@ -16,7 +16,7 @@ class money_flow:
     fields2_value = ','.join(fields2.keys())
     params_temp = (('lmt', 5000000), ('fields1', fields1_value), ('fields2', fields2_value)) + params
 
-    json_response = get_common_json_nohead(url,
+    json_response = get_common_json(url,
                                 params=params_temp)
     datas = json_response['data'][get_value]
     # keys = datas[1].keys()
