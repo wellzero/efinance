@@ -72,7 +72,7 @@ class datacenter:
       df['date'] = df['date'].apply(lambda x : x[0:10])
     return df
 
-  def get_north_stock_status(self, date='2022-10-17', board_type = 'unused'):
+  def get_north_stock_status(self, date='2023-02-13', board_type = 'unused'):
 
     mode = 'auto'
     if date is None:
