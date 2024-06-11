@@ -319,7 +319,7 @@ class finance_getter:
     df = self.get_us_finance_common(symbol, income_name, reportName = 'RPT_USF10_FN_INCOME')
     return df
 
-  def get_data(self, url, params):
+  def get_data(self, url, title_name, params):
 
     bar: tqdm = None
     dfs: List[pd.DataFrame] = []
@@ -351,7 +351,7 @@ class finance_getter:
       df = df.replace('_', 0)
       df = df.replace('None', 0)
       df = df.fillna(0)
-
+      df.columns = list(title_name.values())
       return df
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
@@ -376,21 +376,48 @@ class finance_getter:
 
     reportName = 'RPT_USF10_FN_GMAININDICATOR'
     # reportName = 'RPT_USF10_FN_BMAININDICATOR'
+    main_name = {
+        'REPORT_DATE': 'report_date',
+        'STD_REPORT_DATE': 'std_report_date',
+        'REPORT_DATA_TYPE': 'report_data_type',
+        'REPORT_TYPE': 'report_type',
+        'OPERATE_INCOME': 'operate_income',
+        'OPERATE_INCOME_YOY': 'operate_income_yoy',
+        'GROSS_PROFIT': 'gross_profit',
+        'GROSS_PROFIT_YOY': 'gross_profit_yoy',
+        'PARENT_HOLDER_NETPROFIT': 'parent_holder_netprofit',
+        'PARENT_HOLDER_NETPROFIT_YOY': 'parent_holder_netprofit_yoy',
+        'BASIC_EPS': 'basic_eps',
+        'DILUTED_EPS': 'diluted_eps',
+        'GROSS_PROFIT_RATIO': 'gross_profit_ratio',
+        'NET_PROFIT_RATIO': 'net_profit_ratio',
+        'ACCOUNTS_RECE_TR': 'accounts_rece_tr',
+        'INVENTORY_TR': 'inventory_tr',
+        'TOTAL_ASSETS_TR': 'total_assets_tr',
+        'ACCOUNTS_RECE_TDAYS': 'accounts_rece_tdays',
+        'INVENTORY_TDAYS': 'inventory_tdays',
+        'TOTAL_ASSETS_TDAYS': 'total_assets_tdays',
+        'ROE_AVG': 'roe_avg',
+        'ROA': 'roa',
+        'CURRENT_RATIO': 'current_ratio',
+        'SPEED_RATIO': 'speed_ratio',
+        'OCF_LIQDEBT': 'ocf_liqdebt',
+        'DEBT_ASSET_RATIO': 'debt_asset_ratio',
+        'EQUITY_RATIO': 'equity_ratio',
+        'BASIC_EPS_YOY': 'basic_eps_yoy',
+        'GROSS_PROFIT_RATIO_YOY': 'gross_profit_ratio_yoy',
+        'NET_PROFIT_RATIO_YOY': 'net_profit_ratio_yoy',
+        'ROE_AVG_YOY': 'roe_avg_yoy',
+        'ROA_YOY': 'roa_yoy',
+        'DEBT_ASSET_RATIO_YOY': 'debt_asset_ratio_yoy',
+        'CURRENT_RATIO_YOY': 'current_ratio_yoy',
+        'SPEED_RATIO_YOY': 'speed_ratio_yoy'
+    }
+
 
     params = [
             ('reportName', f'{reportName}'),
-            ('columns',  (
-       'REPORT_DATE', 'STD_REPORT_DATE',
-       'REPORT_DATA_TYPE', 'REPORT_TYPE', 'OPERATE_INCOME', 'OPERATE_INCOME_YOY',
-       'GROSS_PROFIT', 'GROSS_PROFIT_YOY', 'PARENT_HOLDER_NETPROFIT',
-       'PARENT_HOLDER_NETPROFIT_YOY', 'BASIC_EPS', 'DILUTED_EPS',
-       'GROSS_PROFIT_RATIO', 'NET_PROFIT_RATIO', 'ACCOUNTS_RECE_TR',
-       'INVENTORY_TR', 'TOTAL_ASSETS_TR', 'ACCOUNTS_RECE_TDAYS',
-       'INVENTORY_TDAYS', 'TOTAL_ASSETS_TDAYS', 'ROE_AVG', 'ROA',
-       'CURRENT_RATIO', 'SPEED_RATIO', 'OCF_LIQDEBT', 'DEBT_ASSET_RATIO',
-       'EQUITY_RATIO', 'BASIC_EPS_YOY', 'GROSS_PROFIT_RATIO_YOY',
-       'NET_PROFIT_RATIO_YOY', 'ROE_AVG_YOY', 'ROA_YOY',
-       'DEBT_ASSET_RATIO_YOY', 'CURRENT_RATIO_YOY', 'SPEED_RATIO_YOY')),
+            ('columns',  (main_name.keys())),
             ('filter', f'(SECUCODE="{symbol}")'),
             ('sortTypes', '-1'),
             ('pageSize', '500'),
@@ -399,5 +426,5 @@ class finance_getter:
             ('sortColumns', 'REPORT_DATE')
     ]
 
-    df = self.get_data(url, params)
+    df = self.get_data(url, main_name, params)
     return df
