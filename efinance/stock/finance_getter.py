@@ -117,6 +117,8 @@ class finance_getter:
       # Remove the first row
       df_transposed = df_transposed.iloc[1:]
 
+      df_transposed = df_transposed.loc[:,title_name.keys()]
+
       df_transposed.columns = list(title_name.values())
       # df_transposed.reset_index(drop=True, inplace=True)
       return df_transposed
@@ -156,6 +158,9 @@ class finance_getter:
 
     item_names = self.get_item(url, params)
 
+
+    selected_dict = {key: title_name[key] for key in item_names if key in title_name}
+
     # print(item_names)
 
 # reportName: RPT_USSK_FN_CASHFLOW
@@ -181,7 +186,7 @@ class finance_getter:
             ('sortColumns', 'STD_ITEM_CODE,REPORT_DATE')
     ]
 
-    df = self.get_data_1(url, params, title_name)
+    df = self.get_data_1(url, params, selected_dict)
     return df
 
   def get_us_finance_cash(self, symbol, REPORT_TYPE = "年报"):
@@ -193,6 +198,7 @@ class finance_getter:
     '减值及拨备': 'impairment_and_provisions',
     '递延所得税': 'deferred_income_tax',
     '资产处置损益': 'gains_and_losses_on_disposal_of_assets',
+    '投资损益': 'gain_loss_on_investments',
     '养老及退休福利': 'pension_and_retirement_benefits',
     '经营业务调整其他项目': 'other_adjustments_to_operating_activities',
     '应收账款及票据': 'accounts_receivable_and_notes',
@@ -201,7 +207,7 @@ class finance_getter:
     '应付账款及票据': 'accounts_payable_and_notes',
     '应付税项': 'taxes_payable',
     '其他经营活动产生的现金流量总额': 'total_cash_flow_from_other_operating_activities',
-    '经营业务其他项目': 'other_operating_activities',
+    '经营业务其他项目': 'other_operating_items',
     '经营活动产生的现金流量净额': 'net_cash_flow_from_operating_activities',
     '购买固定资产': 'purchase_of_fixed_assets',
     '处置固定资产': 'disposal_of_fixed_assets',
@@ -220,15 +226,22 @@ class finance_getter:
     '新增借款': 'new_borrowings',
     '现金及权益增加(减少)': 'increase_decrease_in_cash_and_equity',
     '贷款收益': 'interest_income_from_loans',
+    '票据相关收益': 'note_related_income',
     '超额税收优惠': 'excess_tax_benefits',
     '其他筹资活动产生的现金流量净额': 'net_cash_flow_from_other_financing_activities',
-    '筹资业务其他项目': 'other_financing_activities',
+    '筹资业务其他项目': 'other_financing_items',
     '筹资活动产生的现金流量净额': 'net_cash_flow_from_financing_activities',
     '汇率变动影响': 'effect_of_exchange_rate_changes',
     '现金及现金等价物增加(减少)额': 'net_increase_decrease_in_cash_and_cash_equivalents',
     '现金及现金等价物期初余额': 'cash_and_cash_equivalents_at_beginning_of_period',
-    '现金及现金等价物期末余额': 'cash_and_cash_equivalents_at_end_of_period'
+    '现金及现金等价物期末余额': 'cash_and_cash_equivalents_at_end_of_period',
+    '利息支付': 'interest_paid',
+    '所得税支付': 'income_taxes_paid',
+    '补充资料其他项目': 'other_supplemental_data',
+    '非现金活动': 'non_cash_activities'
     }
+
+
     df = self.get_us_finance_common(symbol, cash_name, reportName = 'RPT_USSK_FN_CASHFLOW')
     return df
   
@@ -238,57 +251,62 @@ class finance_getter:
     '短期投资': 'short_term_investments',
     '应收账款': 'accounts_receivable',
     '存货': 'inventory',
-    '递延所得税资产(流动)': 'deferred_income_tax_assets_current',
-    '预付款项(流动)': 'prepaid_expenses_current',
+    '递延所得税资产(流动)':  'deferred_income_tax_assets_current',
     '其他流动资产': 'other_current_assets',
-    '有价证券投资(流动)': 'marketable_securities_investments_current',
+    '其他应收款': 'other_receivables',
+    '有价证券投资(流动)':  'marketable_securities_investments_current',
     '流动资产合计': 'total_current_assets',
     '物业、厂房及设备': 'property_plant_and_equipment',
-    '固定资产': 'fixed_assets',
     '无形资产': 'intangible_assets',
     '商誉': 'goodwill',
     '长期投资': 'long_term_investments',
-    '递延所得税资产(非流动)': 'deferred_income_tax_assets_non_current',
-    '其他投资': 'other_investments',
-    '预付款项(非流动)': 'prepaid_expenses_non_current',
     '其他非流动资产': 'other_non_current_assets',
     '有价证券投资(非流动)': 'marketable_securities_investments_non_current',
-    '非流动资产其他项目': 'other_non_current_assets_items',
     '非流动资产合计': 'total_non_current_assets',
     '总资产': 'total_assets',
     '应付账款': 'accounts_payable',
     '应付票据(流动)': 'notes_payable_current',
-    '应付税项(流动)': 'taxes_payable_current',
+    '预收及预提费用': 'advances_and_accrued_expenses',
     '短期债务': 'short_term_debt',
     '长期负债(本期部分)': 'current_portion_of_long_term_debt',
     '递延收入(流动)': 'deferred_revenue_current',
     '其他流动负债': 'other_current_liabilities',
-    '应付薪酬和福利': 'accrued_compensation_and_benefits',
-    '资本租赁债务(流动)': 'current_portion_of_capital_lease_obligations',
     '流动负债合计': 'total_current_liabilities',
     '递延所得税负债(非流动)': 'deferred_income_tax_liabilities_non_current',
     '递延收入(非流动)': 'deferred_revenue_non_current',
     '长期负债': 'long_term_debt',
     '其他非流动负债': 'other_non_current_liabilities',
-    '资本租赁债务(非流动)': 'non_current_portion_of_capital_lease_obligations',
-    '退休福利和雇员其他补偿': 'retirement_benefits_and_employee_compensation',
-    '非流动负债其他项目': 'other_non_current_liabilities_items',
+    '非流动负债其他项目': 'other_non_current_liability_items',
     '非流动负债合计': 'total_non_current_liabilities',
     '总负债': 'total_liabilities',
     '普通股': 'common_stock',
+    '留存收益': 'retained_earnings',
+    '其他综合收益': 'other_comprehensive_income',
+    '归属于母公司股东权益其他项目': 'other_equity_attributable_to_parent_company_shareholders',
+    '归属于母公司股东权益': 'equity_attributable_to_parent_company_shareholders',
+    '股东权益合计': 'total_equity',
+    '负债及股东权益合计': 'total_liabilities_and_equity',
+    '非运算项目': 'non_operating_items',
+    '预付款项(流动)': 'prepaid_expenses_current',
+    '固定资产': 'fixed_assets',
+    '递延所得税资产(非流动)': 'deferred_income_tax_assets_non_current',
+    '其他投资': 'other_investments',
+    '预付款项(非流动)': 'prepaid_expenses_non_current',
+    '非流动资产其他项目': 'other_non_current_assets_items',
+    '应付税项(流动)': 'taxes_payable_current',
+    '应付薪酬和福利': 'accrued_compensation_and_benefits',
+    '资本租赁债务(流动)': 'current_portion_of_capital_lease_obligations',
+    '资本租赁债务(非流动)': 'non_current_portion_of_capital_lease_obligations',
+    '退休福利和雇员其他补偿': 'retirement_benefits_and_employee_compensation',
     '优先股': 'preferred_stock',
     '库存股': 'treasury_stock',
-    '留存收益': 'retained_earnings',
     '股本溢价': 'additional_paid_in_capital',
-    '其他综合收益': 'other_comprehensive_income',
-    '归属于母公司股东权益其他项目': 'other_equity_items_attributable_to_parent_company_shareholders',
-    '归属于母公司股东权益': 'equity_attributable_to_parent_company_shareholders',
+    '其他股东权益项目': 'other_equity_items_attributable_to_parent_company_shareholders',
     '少数股东权益': 'minority_interests',
     '股东权益合计其他项目': 'total_shareholders_equity_other_items',
-    '股东权益合计': 'total_shareholders_equity',
-    '负债及股东权益合计': 'total_liabilities_and_shareholders_equity',
-    '非运算项目': 'non_operating_items'
+    '汇率变动影响': 'effect_of_exchange_rate_changes'
     }
+
 
     df = self.get_us_finance_common(symbol, balance_name, reportName = 'RPT_USF10_FN_BALANCE')
     return df
@@ -301,23 +319,21 @@ class finance_getter:
     '营业成本': 'operating_cost',
     '毛利': 'gross_profit',
     '研发费用': 'research_and_development_expenses',
-    '营销费用': 'selling_and_marketing_expenses',
-    '减值及拨备': 'impairment_and_provisions',
+    '营销费用': 'marketing_expenses',
+    '一般及行政费用': 'general_and_administrative_expenses',
     '其他营业费用': 'other_operating_expenses',
+    '重组费用': 'restructuring_expenses',
     '营业费用': 'operating_expenses',
     '营业利润': 'operating_profit',
     '利息收入': 'interest_income',
-    '利息支出': 'interest_expenses',
     '其他收入(支出)': 'other_income_expenses',
+    '资产处理损益': 'gain_loss_on_asset_disposal',
     '税前利润其他项目': 'profit_before_tax_and_other_items',
     '持续经营税前利润': 'profit_before_tax_from_continuing_operations',
     '所得税': 'income_tax',
     '持续经营净利润': 'net_profit_from_continuing_operations',
-    '已终止或非持续经营净利润': 'net_profit_from_discontinued_or_non_continuing_operations',
     '税后利润其他项目': 'profit_after_tax_and_other_items',
     '净利润': 'net_profit',
-    '少数股东损益': 'minority_interest',
-    '归属于优先股净利润及其他项': 'net_profit_attributable_to_preference_shareholders_and_others',
     '归属于普通股股东净利润': 'net_profit_attributable_to_common_shareholders',
     '归属于母公司股东净利润': 'net_profit_attributable_to_parent_company_shareholders',
     '每股股息-普通股': 'dividends_per_share_common_stock',
@@ -325,13 +341,18 @@ class finance_getter:
     '摊薄每股收益-普通股': 'diluted_earnings_per_share_common_stock',
     '基本加权平均股数-普通股': 'basic_weighted_average_shares_common_stock',
     '摊薄加权平均股数-普通股': 'diluted_weighted_average_shares_common_stock',
-    '本公司拥有人占全面收益总额': 'total_comprehensive_income_attributable_to_owners_of_the_parent',
-    '非控股权益占全面收益总额': 'total_comprehensive_income_attributable_to_non_controlling_interests',
-    '其他全面收益其他项目': 'other_comprehensive_income_other_items',
+    '其他全面收益其他项目':  'other_comprehensive_income_other_items',
     '其他全面收益合计项': 'total_other_comprehensive_income',
     '全面收益总额': 'total_comprehensive_income',
-    '非运算项目': 'non_operating_items'
+    '非运算项目': 'non_operating_items',
+    '利息支出': 'interest_expenses',
+    '已终止或非持续经营净利润': 'net_profit_from_discontinued_or_non_continuing_operations',
+    '少数股东损益': 'minority_interest',
+    '归属于优先股净利润及其他项': 'net_profit_attributable_to_preference_shareholders_and_others',
+    '本公司拥有人占全面收益总额': 'total_comprehensive_income_attributable_to_owners_of_the_parent',
+    '非控股权益占全面收益总额': 'total_comprehensive_income_attributable_to_non_controlling_interests'
     }
+
     df = self.get_us_finance_common(symbol, income_name, reportName = 'RPT_USF10_FN_INCOME')
     return df
 
