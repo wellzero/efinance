@@ -90,16 +90,20 @@ class finance_getter:
 
       # Assuming df is your DataFrame containing the financial data
       # First, let's ensure the 'REPORT' column is of type category to ensure correct ordering
-      df['REPORT_DATE'] = pd.Categorical(df['REPORT_DATE'])
+      REPORT_DATE = 'REPORT'  # 'REPORT_DATE' 'REPORT'
+      df[REPORT_DATE] = pd.Categorical(df[REPORT_DATE])
+
+      report_data_real_time = df.loc[df['ITEM_NAME'] == list(title_name.keys())[0], 'REPORT_DATE']
 
       # Now, pivot the DataFrame
-      pivot_df = df.pivot_table(index='ITEM_NAME', columns=['REPORT_DATE'], values='AMOUNT', aggfunc='sum')
+      pivot_df = df.pivot_table(index='ITEM_NAME', columns=[REPORT_DATE], values='AMOUNT', aggfunc='sum')
+
 
       # Reset index to make 'ITEM_NAME' a column again if you prefer
       pivot_df.reset_index(inplace=True)
 
       # Sort the columns by 'REPORT' in ascending order
-      pivot_df = pivot_df.sort_values(by='REPORT_DATE', axis=1, ascending=False)
+      pivot_df = pivot_df.sort_values(by=REPORT_DATE, axis=1, ascending=False)
 
 
       pivot_df = pivot_df.replace('--', 0)
@@ -363,7 +367,7 @@ class finance_getter:
 
     page = 1
     while 1:
-        param_temp = [('pageNumber', page)] + params
+        param_temp = params + [('pageNumber', page)] 
         response = get_common_json(url, param_temp)
         if bar is None:
             pages = jsonpath(response, '$..pages')
@@ -454,7 +458,7 @@ class finance_getter:
 
     params = [
             ('reportName', f'{reportName}'),
-            ('columns',  (main_name.keys())),
+            ('columns',  list(main_name.keys())),
             ('filter', f'(SECUCODE="{symbol}")'),
             ('sortTypes', '-1'),
             ('pageSize', '500'),
@@ -464,4 +468,97 @@ class finance_getter:
     ]
 
     df = self.get_data(url, main_name, params)
+
+    if df.empty:
+      main_name = {
+    'ORG_CODE': 'org_code',
+    'SECURITY_CODE': 'security_code',
+    'SECURITY_NAME_ABBR': 'security_name_abbr',
+    'SECUCODE': 'secucode',
+    'SECURITY_INNER_CODE': 'security_inner_code',
+    'REPORT_DATE': 'report_date',
+    'STD_REPORT_DATE': 'std_report_date',
+    'START_DATE': 'start_date',
+    'NOTICE_DATE': 'notice_date',
+    'DATE_TYPE': 'date_type',
+    'DATE_TYPE_CODE': 'date_type_code',
+    'REPORT_TYPE': 'report_type',
+    'REPORT_DATA_TYPE': 'report_data_type',
+    'FINANCIAL_DATE': 'financial_date',
+    'CURRENCY': 'currency',
+    'CURRENCY_NAME': 'currency_name',
+    'ACCOUNT_STANDARD': 'account_standard',
+    'ACCOUNT_STANDARD_NAME': 'account_standard_name',
+    'ORGTYPE': 'orgtype',
+    'TOTAL_INCOME': 'total_income',
+    'TOTAL_INCOME_YOY': 'total_income_yoy',
+    'NET_INTEREST_INCOME': 'net_interest_income',
+    'NET_INTEREST_INCOME_YOY': 'net_interest_income_yoy',
+    'PARENT_HOLDER_NETPROFIT': 'parent_holder_netprofit',
+    'PARENT_HOLDER_NETPROFIT_YOY': 'parent_holder_netprofit_yoy',
+    'BASIC_EPS_CS': 'basic_eps_cs',
+    'BASIC_EPS_CS_YOY': 'basic_eps_cs_yoy',
+    'DILUTED_EPS_CS': 'diluted_eps_cs',
+    'DILUTED_EPS_CS_YOY': 'diluted_eps_cs_yoy',
+    'LOAN_LOSS_PROVISION': 'loan_loss_provision',
+    'LOAN_LOSS_PROVISION_YOY': 'loan_loss_provision_yoy',
+    'LOAN_DEPOSIT': 'loan_deposit',
+    'LOAN_EQUITY': 'loan_equity',
+    'LOAN_ASSETS': 'loan_assets',
+    'DEPOSIT_EQUITY': 'deposit_equity',
+    'DEPOSIT_ASSETS': 'deposit_assets',
+    'ROL': 'rol',
+    'ROD': 'rod',
+    'ROE': 'roe',
+    'ROE_YOY': 'roe_yoy',
+    'ROA': 'roa',
+    'ROA_YOY': 'roa_yoy',
+}
+      params[0] = ('reportName', 'RPT_USF10_FN_BMAININDICATOR')
+      params[1] = ('columns',  list(main_name.keys()))
+      df = self.get_data(url, main_name, params)
+    if df.empty:
+      main_name = {
+    'ORG_CODE': 'org_code',
+    'SECURITY_CODE': 'security_code',
+    'SECUCODE': 'secucode',
+    'SECURITY_NAME_ABBR': 'security_name_abbr',
+    'SECURITY_INNER_CODE': 'security_inner_code',
+    'STD_REPORT_DATE': 'std_report_date',
+    'REPORT_DATE': 'report_date',
+    'DATE_TYPE': 'date_type',
+    'DATE_TYPE_CODE': 'date_type_code',
+    'REPORT_TYPE': 'report_type',
+    'REPORT_DATA_TYPE': 'report_data_type',
+    'FISCAL_YEAR': 'fiscal_year',
+    'START_DATE': 'start_date',
+    'NOTICE_DATE': 'notice_date',
+    'ACCOUNT_STANDARD': 'account_standard',
+    'ACCOUNT_STANDARD_NAME': 'account_standard_name',
+    'CURRENCY': 'currency',
+    'CURRENCY_NAME': 'currency_name',
+    'ORGTYPE': 'orgtype',
+    'TOTAL_INCOME': 'total_income',
+    'TOTAL_INCOME_YOY': 'total_income_yoy',
+    'PREMIUM_INCOME': 'premium_income',
+    'PREMIUM_INCOME_YOY': 'premium_income_yoy',
+    'PARENT_HOLDER_NETPROFIT': 'parent_holder_netprofit',
+    'PARENT_HOLDER_NETPROFIT_YOY': 'parent_holder_netprofit_yoy',
+    'BASIC_EPS_CS': 'basic_eps_cs',
+    'BASIC_EPS_CS_YOY': 'basic_eps_cs_yoy',
+    'DILUTED_EPS_CS': 'diluted_eps_cs',
+    'PAYOUT_RATIO': 'payout_ratio',
+    'CAPITIAL_RATIO': 'capitial_ratio',
+    'ROE': 'roe',
+    'ROE_YOY': 'roe_yoy',
+    'ROA': 'roa',
+    'ROA_YOY': 'roa_yoy',
+    'DEBT_RATIO': 'debt_ratio',
+    'DEBT_RATIO_YOY': 'debt_ratio_yoy',
+    'EQUITY_RATIO': 'equity_ratio',
+}
+      params[0] = ('reportName', 'RPT_USF10_FN_IMAININDICATOR')
+      params[1] = ('columns',  list(main_name.keys()))
+      df = self.get_data(url, main_name, params)
+
     return df
