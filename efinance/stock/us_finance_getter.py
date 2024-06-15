@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 
 
-class finance_getter:
+class us_finance_getter:
 
 
   def get_secucode(self, symbol):
