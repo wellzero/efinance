@@ -93,6 +93,8 @@ class us_finance_getter:
       REPORT_DATE = 'REPORT'  # 'REPORT_DATE' 'REPORT'
       df[REPORT_DATE] = pd.Categorical(df[REPORT_DATE])
 
+      report_data_real_time = df.loc[df['ITEM_NAME'] == list(title_name.keys())[0], 'REPORT_DATE']
+
       # Now, pivot the DataFrame
       pivot_df = df.pivot_table(index='ITEM_NAME', columns=[REPORT_DATE], values='AMOUNT', aggfunc='sum')
 
@@ -108,7 +110,7 @@ class us_finance_getter:
       pivot_df = pivot_df.replace('_', 0)
       pivot_df = pivot_df.replace('None', 0)
       pivot_df = pivot_df.fillna(0)
-      pivot_df['ITEM_NAME'] = pd.Categorical(pivot_df['ITEM_NAME'], categories=title_name, ordered=True)
+      pivot_df['ITEM_NAME'] = pd.Categorical(pivot_df['ITEM_NAME'], categories=list(title_name.keys()), ordered=True)
       df_sorted = pivot_df.sort_values(by='ITEM_NAME')
       # Transpose the DataFrame
       df_transposed = df_sorted.transpose()
@@ -119,9 +121,9 @@ class us_finance_getter:
       # Remove the first row
       df_transposed = df_transposed.iloc[1:]
 
-      # df_transposed = df_transposed.loc[:,title_name.keys()]
+      df_transposed = df_transposed.loc[:,title_name.keys()]
 
-      # df_transposed.columns = list(title_name.values())
+      df_transposed.columns = list(title_name.values())
       # df_transposed.reset_index(drop=True, inplace=True)
       return df_transposed
     else:
@@ -158,10 +160,10 @@ class us_finance_getter:
             ('sortColumns', 'STD_ITEM_CODE,REPORT_DATE')
     ]
 
-    selected_dict = self.get_item(url, params)
+    item_names = self.get_item(url, params)
 
 
-    # selected_dict = {key: title_name[key] for key in item_names if key in title_name}
+    selected_dict = {key: title_name[key] for key in item_names if key in title_name}
 
     # print(item_names)
 
@@ -390,7 +392,7 @@ class us_finance_getter:
       df = df.replace('_', 0)
       df = df.replace('None', 0)
       df = df.fillna(0)
-      # df.columns = list(title_name.values())
+      df.columns = list(title_name.values())
       return df
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
