@@ -98,26 +98,26 @@ class us_finance_getter:
 
 
       # Reset index to make 'ITEM_NAME' a column again if you prefer
-      pivot_df.reset_index(inplace=True)
+      # pivot_df.reset_index(inplace=True)
 
       # Sort the columns by 'REPORT' in ascending order
-      pivot_df = pivot_df.sort_values(by=REPORT_DATE, axis=1, ascending=False)
+      # pivot_df = pivot_df.sort_values(by=REPORT_DATE, axis=1, ascending=False)
 
 
       pivot_df = pivot_df.replace('--', 0)
       pivot_df = pivot_df.replace('_', 0)
       pivot_df = pivot_df.replace('None', 0)
       pivot_df = pivot_df.fillna(0)
-      pivot_df['ITEM_NAME'] = pd.Categorical(pivot_df['ITEM_NAME'], categories=title_name, ordered=True)
-      df_sorted = pivot_df.sort_values(by='ITEM_NAME')
+      # pivot_df['ITEM_NAME'] = pd.Categorical(pivot_df['ITEM_NAME'], categories=title_name, ordered=True)
+      # df_sorted = pivot_df.sort_values(by='ITEM_NAME')
       # Transpose the DataFrame
-      df_transposed = df_sorted.transpose()
+      df_transposed = pivot_df.transpose()
 
       # Set the first row as the column names
-      df_transposed.columns = df_transposed.iloc[0]
+      # df_transposed.columns = df_transposed.iloc[0]
 
       # Remove the first row
-      df_transposed = df_transposed.iloc[1:]
+      # df_transposed = df_transposed.iloc[1:]
 
       # df_transposed = df_transposed.loc[:,title_name.keys()]
 
