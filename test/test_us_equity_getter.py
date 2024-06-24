@@ -8,7 +8,7 @@ from time import sleep
 
 datacenter = ef.stock.us_equity_getter()
 # 
-sym = datacenter.get_secucode("AAPL")
+sym = datacenter.get_secucode("TEAM")
 # sym = datacenter.get_secucode("CI")
 # sym = datacenter.get_secucode("JPM")
 # sym = datacenter.get_secucode("JPM")
