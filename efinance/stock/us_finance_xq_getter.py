@@ -178,7 +178,7 @@ class us_finance_xq_getter:
             ('symbol', f'{symbol}'),
             ('begin', f'{timestamp}'),
             ('period', 'day'),
-            ('type', '-90000'),
+            ('type', 'before'),
             ('indicator', 'kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance'),
             ('count', '-1000000')
     ]
