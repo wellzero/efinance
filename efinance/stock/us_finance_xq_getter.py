@@ -61,6 +61,27 @@ headers = {'Host': 'stock.xueqiu.com',
 
 class us_finance_xq_getter:
 
+  def get_data_daily_data(self, url, params):
+
+    bar: tqdm = None
+    dfs: List[pd.DataFrame] = []
+
+    param_temp = params
+    response = get_common_json(url, param_temp, headers)
+
+    data = jsonpath(response, '$..item[:]')
+    df = pd.DataFrame(data)
+
+    if(len(df) > 0):
+
+      df.columns = response['data']['column']
+      df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+      return df
+    else:
+      print("download url", url, "param ", param_temp, "failed, pls check it!")
+      return pd.DataFrame()
+      # exit(-1)
+
   def get_data_1(self, url, params):
 
     bar: tqdm = None
@@ -128,4 +149,38 @@ class us_finance_xq_getter:
             ('count', '5000')
     ]
     df = self.get_data_1(url, params)
+    return df
+
+  def get_us_finance_daily_trade(self, symbol):
+    url = 'https://stock.xueqiu.com/v5/stock/chart/kline.json'
+#     symbol: NVDA
+# begin: 1719615730587
+# period: day
+# type: before
+# count: -90000
+# indicator: kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
+    import datetime
+
+    def get_current_timestamp_ms():
+      """Function to get current timestamp in milliseconds using datetime."""
+      current_timestamp = datetime.datetime.now()
+      # Convert timestamp to epoch time in seconds
+      epoch_time = current_timestamp.timestamp()
+      # Convert epoch time to milliseconds (multiply by 1000)
+      current_time_ms = epoch_time * 1000
+      return int(current_time_ms)
+
+    # Call the function and print the result
+    timestamp = get_current_timestamp_ms()
+    # timestamp = 1719615730587
+
+    params = [
+            ('symbol', f'{symbol}'),
+            ('begin', f'{timestamp}'),
+            ('period', 'day'),
+            ('type', '-90000'),
+            ('indicator', 'kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance'),
+            ('count', '-1000000')
+    ]
+    df = self.get_data_daily_data(url, params)
     return df
