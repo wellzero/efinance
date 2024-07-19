@@ -69,6 +69,72 @@ class us_finance_xq_sector_getter:
     df = self.get_data_1(url, params)
     return df
   
+  def get_all_us_star_equity(self, encode = None):
+
+    url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
+
+# page: 1
+# size: 30
+# order: desc
+# order_by: percent
+# market: US
+# type: us_star
+
+    params = [ 
+            ('size', 90),
+            ('order', 'desc'),
+            ('order_by', 'percent'),
+            ('market', 'US'),
+            ('type', 'us_star')
+    ]
+
+    df = self.get_data_1(url, params)
+    return df
+  
+  def get_all_us_listed_equity(self, encode = None):
+
+    url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
+
+# page: 1
+# size: 90
+# order: desc
+# order_by: list_date
+# market: US
+# type: listed
+
+    params = [ 
+            ('size', 90),
+            ('order', 'desc'),
+            ('order_by', 'list_date'),
+            ('market', 'US'),
+            ('type', 'listed')
+    ]
+
+    df = self.get_data_1(url, params)
+    return df
+  
+  def get_all_us_listed_equity(self, encode = None):
+
+    url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
+
+# page: 1
+# size: 30
+# order: desc
+# order_by: percent
+# market: US
+# type: us_china
+
+    params = [ 
+            ('size', 90),
+            ('order', 'desc'),
+            ('order_by', 'percent'),
+            ('market', 'US'),
+            ('type', 'us_china')
+    ]
+
+    df = self.get_data_1(url, params)
+    return df
+
   def get_all_us_sector_name(self):
     url = 'https://stock.xueqiu.com/v5/stock/screener/industries.json'
 
