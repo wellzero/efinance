@@ -113,7 +113,7 @@ class us_finance_xq_sector_getter:
     df = self.get_data_1(url, params)
     return df
   
-  def get_all_us_listed_equity(self, encode = None):
+  def get_all_us_us_china_equity(self, encode = None):
 
     url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
 
