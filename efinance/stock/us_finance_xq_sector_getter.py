@@ -44,6 +44,38 @@ class us_finance_xq_sector_getter:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
       return pd.DataFrame()
       # exit(-1)
+  def get_data_2(self, url, params):
+
+
+    dfs: List[pd.DataFrame] = []
+
+    page = 1
+    while 1:
+        param_temp = [('page', page)] + params
+        print(f"page {page}")
+        response = get_common_json(url, param_temp, headers)
+
+        data = jsonpath(response, '$..items[:]')
+        if not data:
+          break
+        page += 1
+        df = pd.DataFrame(data)
+        dfs.append(df)
+
+    if(len(dfs) > 0):
+
+      df = pd.concat(dfs, ignore_index=True)
+
+      df = df.replace('--', 0)
+      df = df.replace('_', 0)
+      df = df.replace('None', 0)
+      df = df.fillna(0)
+
+      return df
+    else:
+      print("download url", url, "param ", param_temp, "failed, pls check it!")
+      return pd.DataFrame()
+      # exit(-1)
 
   def get_all_us_equity(self, encode = None):
 
@@ -94,6 +126,7 @@ class us_finance_xq_sector_getter:
   def get_all_us_listed_equity(self, encode = None):
 
     url = 'https://stock.xueqiu.com/v5/stock/preipo/us/list.json'
+    # https://stock.xueqiu.com/v5/stock/preipo/us/list.json?page=1&size=30&order=desc&order_by=list_date&market=US&type=listed
 
 # page: 1
 # size: 90
@@ -110,7 +143,7 @@ class us_finance_xq_sector_getter:
             ('type', 'listed')
     ]
 
-    df = self.get_data_1(url, params)
+    df = self.get_data_2(url, params)
     return df
   
   def get_all_us_us_china_equity(self, encode = None):
