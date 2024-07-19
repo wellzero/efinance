@@ -53,7 +53,8 @@ from datetime import datetime, timedelta
 
 headers = {'Host': 'stock.xueqiu.com',
             'Accept': 'application/json',
-            'Cookie': 'xq_a_token=483932c5fb313ca4c93e7165a31f179fb71e1804',
+            # 'Cookie': 'xq_a_token=483932c5fb313ca4c93e7165a31f179fb71e1804',
+            'Cookie': 'cookiesu=531719230521675; u=531719230521675; s=aw11i3jexw; device_id=af3db6e8ca230ec3802498e50eb0d2c3; Hm_lvt_1db88642e346389874251b5a1eded6e3=1719721306; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1719721310; xq_a_token=64274d77bec17c39d7ef1934b7a3588572463436; xqat=64274d77bec17c39d7ef1934b7a3588572463436; xq_r_token=3f3592acdffbaaee3a7ea110c5d151d2710b7318; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTcyMjczMjcyOCwiY3RtIjoxNzIxMzAzODc3ODI2LCJjaWQiOiJkOWQwbjRBWnVwIn0.W1EszHcxZpR0MCqxRnEe2QYODoSUnHpuHOcrXtUPU-J3QEQPGntLAJieDZhp0mqZItfz9vgITM69xY75tII3XIso5UVdgyUKX3hc8AcMB9u6tjT-4X1MRHDTuB5545BskeAesimngXtOw53gSnDSZEaup6qE8jBflLhIXE4abemcDu6ISZ2acynDOlMWqnRZy8HhOyFl090Zu2wMZT7sFE9X0vSB7uba1ZHc8-SusZzb8iFWxR4So9d4rxmWyGBM8_V0pmvrpNZlfJvNYIzMtA7O0pxIpFzw_MZFKeHIO4mO6XGMHIXDlCyktUf2WIZ-jf8nSrj-QGFoMbaPktj8pw',
             'User-Agent': 'Xueqiu iPhone 11.8',
             'Accept-Language': 'zh-Hans-CN;q=1, ja-JP;q=0.9',
             'Accept-Encoding': 'br, gzip, deflate',

@@ -13,6 +13,7 @@ datacenter_xq = ef.stock.us_finance_xq_getter()
 # sym = datacenter.get_secucode("JPM")
 # sym = datacenter.get_secucode("MSFT")
 # sym = datacenter.get_secucode("MMM")
+
 sym = "MSFT"
 data = datacenter_xq.get_us_finance_daily_trade(symbol = sym)
 # data = datacenter_xq.get_us_finance_cash(symbol = sym)
