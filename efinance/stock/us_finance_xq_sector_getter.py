@@ -93,7 +93,7 @@ class us_finance_xq_sector_getter:
   
   def get_all_us_listed_equity(self, encode = None):
 
-    url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
+    url = 'https://stock.xueqiu.com/v5/stock/preipo/us/list.json'
 
 # page: 1
 # size: 90
