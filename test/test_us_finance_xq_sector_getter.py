@@ -8,6 +8,7 @@ from time import sleep
 
 datacenter_xq = ef.stock.us_finance_xq_sector_getter()
 # 
+data = datacenter_xq.get_all_us_listed_equity()
 # get sector name encode
 data = datacenter_xq.get_all_us_sector_name()
 # get all the equity
