@@ -181,3 +181,17 @@ class us_finance_xq_sector_getter:
     df_industries = pd.DataFrame(industries)
 
     return df_industries
+
+  def get_all_us_symbol(self):
+    url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
+
+    params = [ 
+            ('size', 90),
+            ('order', 'desc'),
+            ('order_by', 'market_capital'),
+            ('type', 'us'),
+            ('market', 'US')
+    ]
+
+    df = self.get_data_1(url, params)
+    return df
