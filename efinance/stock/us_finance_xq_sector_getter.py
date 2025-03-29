@@ -12,6 +12,11 @@ from .us_finance_xq_getter import headers
 
 class us_finance_xq_sector_getter:
 
+  def __init__(self, market = 'us') -> None:
+    self.market = market
+
+    return
+
   def get_data_1(self, url, params):
 
 
@@ -92,7 +97,7 @@ class us_finance_xq_sector_getter:
             ('size', 90),
             ('order', 'desc'),
             ('order_by', 'percent'),
-            ('market', 'US')
+            ('market', self.market.upper())
     ]
 
     if encode != None:
@@ -172,7 +177,7 @@ class us_finance_xq_sector_getter:
     url = 'https://stock.xueqiu.com/v5/stock/screener/industries.json'
 
     params = [ 
-            ('category', 'us')
+            ('category', self.market)
     ]
     response = get_common_json(url, params, headers)
 
@@ -185,12 +190,21 @@ class us_finance_xq_sector_getter:
   def get_all_us_symbol(self):
     url = 'https://stock.xueqiu.com/v5/stock/screener/quote/list.json'
 
+    if self.market == 'us':
+      type = 'us'
+    elif self.market == 'cn':
+      type = 'sh_sz'
+    elif self.market == 'hk':
+      type = 'hk'
+    else:
+        raise ValueError(f"Unsupported market: {self.market}")
+
     params = [ 
             ('size', 90),
             ('order', 'desc'),
             ('order_by', 'market_capital'),
-            ('type', 'us'),
-            ('market', 'US')
+            ('type', type),
+            ('market', self.market.upper())
     ]
 
     df = self.get_data_1(url, params)

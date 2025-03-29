@@ -109,6 +109,10 @@ headers = {'Host': 'stock.xueqiu.com',
 
 class us_finance_xq_getter:
 
+  def __init__(self, market = "us") -> None:
+    self.market = market
+    return
+
   def get_data_daily_data(self, url, params):
 
     bar: tqdm = None
@@ -156,7 +160,7 @@ class us_finance_xq_getter:
 # is_detail: true
 # count: 50000
 # timestamp: 1719231792501
-    url = 'https://stock.xueqiu.com/v5/stock/finance/us/cash_flow.json'
+    url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/cash_flow.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
@@ -167,7 +171,7 @@ class us_finance_xq_getter:
     return df
   
   def get_us_finance_balance(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/us/balance.json'
+    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
@@ -178,7 +182,7 @@ class us_finance_xq_getter:
     return df
 
   def get_us_finance_income(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/us/income.json'
+    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
@@ -189,7 +193,7 @@ class us_finance_xq_getter:
     return df
   
   def get_us_finance_main_factor(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/us/indicator.json'
+    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
