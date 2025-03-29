@@ -171,7 +171,7 @@ class us_finance_xq_getter:
     return df
   
   def get_us_finance_balance(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
+    url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
@@ -182,7 +182,7 @@ class us_finance_xq_getter:
     return df
 
   def get_us_finance_income(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
+    url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
@@ -193,7 +193,7 @@ class us_finance_xq_getter:
     return df
   
   def get_us_finance_main_factor(self, symbol):
-    url = 'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
+    url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
     params = [
             ('symbol', f'{symbol}'),
             ('type', 'all'),
