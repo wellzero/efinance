@@ -67,7 +67,10 @@ def get_cookies():
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
   options.add_argument('--disable-dev-shm-usage')
+  
+  print("ChromeDriverManager().install()")
   driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+  print("ChromeDriverManager().install() finished")
   # driver = webdriver.Chrome(options=options)
 
   # Navigate to the website
@@ -80,6 +83,7 @@ def get_cookies():
   page_source = driver.page_source
 
   # Get cookies
+  print("Getting cookies...")
   cookies = driver.get_cookies()
   print("Cookies:", cookies)
   cookie_str = str()
@@ -146,9 +150,11 @@ class us_finance_xq_getter:
     df = pd.DataFrame(data)
 
     if(len(df) > 0):
-
-      df['report_date'] = pd.to_datetime(df['report_date'], unit='ms')
-      return df
+      if 'report_date' not in df.columns:
+        return df
+      else:
+        df['report_date'] = pd.to_datetime(df['report_date'], unit='ms')
+        return df
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
       return pd.DataFrame()
@@ -236,3 +242,35 @@ class us_finance_xq_getter:
     ]
     df = self.get_data_daily_data(url, params)
     return df
+
+  def get_cn_fund_list(self):
+      """
+      Fetch fund list data from Xueqiu API.
+      
+      Parameters:
+      - market: Market type (e.g., "cn" for China, "us" for US).
+      - page: Page number for pagination.
+      - size: Number of items per page.
+      
+      Returns:
+      - DataFrame containing fund list data.
+      """
+      url = 'https://stock.xueqiu.com/v5/stock/screener/fund/list.json'
+      params = [
+          ('page', 1),
+          ('size', 3000),
+          ('order', 'desc'),          # Order by descending
+          ('order_by', 'percent'),    # Order by percentage
+          ('type', '18'),             # Type of fund
+          ('parent_type', '1')        # Parent type
+      ]
+      df = self.get_data_1(url, params)
+      return df
+
+# https://stock.xueqiu.com/v5/stock/chart/kline.json
+# symbol SZ980023
+# begin 1749823680535
+# period day
+# type before
+# count -284
+# indicator kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
