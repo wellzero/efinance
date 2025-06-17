@@ -193,7 +193,7 @@ class us_finance_getter:
     df = self.get_data_1(url, params, selected_dict)
     return df
 
-  def get_us_finance_cash(self, symbol, REPORT_TYPE = "年报"):
+  def xq_get_cash(self, symbol, REPORT_TYPE = "年报"):
   
     cash_name = {
     '净利润': 'net_profit',
@@ -249,7 +249,7 @@ class us_finance_getter:
     df = self.get_us_finance_common(symbol, cash_name, reportName = 'RPT_USSK_FN_CASHFLOW')
     return df
   
-  def get_us_finance_balance(self, symbol, REPORT_TYPE = "年报"):
+  def xq_get_balance(self, symbol, REPORT_TYPE = "年报"):
     balance_name = {
     '现金及现金等价物': 'cash_and_cash_equivalents',
     '短期投资': 'short_term_investments',
@@ -315,7 +315,7 @@ class us_finance_getter:
     df = self.get_us_finance_common(symbol, balance_name, reportName = 'RPT_USF10_FN_BALANCE')
     return df
 
-  def get_us_finance_income(self, symbol, REPORT_TYPE = "年报"):
+  def xq_get_income(self, symbol, REPORT_TYPE = "年报"):
     income_name = {
     '主营收入': 'main_revenue',
     '营业收入': 'operating_revenue',
@@ -399,7 +399,7 @@ class us_finance_getter:
       return pd.DataFrame()
       # exit(-1)
 
-  def get_us_finance_main_factor(self, symbol):
+  def xq_get_indicator(self, symbol):
 
     url = 'https://datacenter.eastmoney.com/securities/api/data/v1/get'
 

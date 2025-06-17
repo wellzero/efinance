@@ -10,10 +10,10 @@ datacenter_xq = ef.stock.us_finance_xq_getter()
 # 
 
 etf = datacenter_xq.get_cn_fund_list()
-print(etf)
+print("fund:", etf)
 
 sym = "SH518660"
-data = datacenter_xq.get_us_finance_daily_trade(symbol = sym)
-# data = datacenter_xq.get_us_finance_cash(symbol = sym)
+data = datacenter_xq.xq_get_kline(symbol = sym)
+# data = datacenter_xq.xq_get_cash(symbol = sym)
 print(data)
 

@@ -160,7 +160,7 @@ class us_finance_xq_getter:
       return pd.DataFrame()
       # exit(-1)
 
-  def get_us_finance_cash(self, symbol):
+  def xq_get_cash(self, symbol):
 # symbol: AAPL
 # type: all
 # is_detail: true
@@ -176,7 +176,7 @@ class us_finance_xq_getter:
     df = self.get_data_1(url, params)
     return df
   
-  def get_us_finance_balance(self, symbol):
+  def xq_get_balance(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -187,7 +187,7 @@ class us_finance_xq_getter:
     df = self.get_data_1(url, params)
     return df
 
-  def get_us_finance_income(self, symbol):
+  def xq_get_income(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -198,7 +198,7 @@ class us_finance_xq_getter:
     df = self.get_data_1(url, params)
     return df
   
-  def get_us_finance_main_factor(self, symbol):
+  def xq_get_indicator(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -209,7 +209,7 @@ class us_finance_xq_getter:
     df = self.get_data_1(url, params)
     return df
 
-  def get_us_finance_daily_trade(self, symbol):
+  def xq_get_kline(self, symbol):
     url = 'https://stock.xueqiu.com/v5/stock/chart/kline.json'
 #     symbol: NVDA
 # begin: 1719615730587
@@ -243,14 +243,22 @@ class us_finance_xq_getter:
     df = self.get_data_daily_data(url, params)
     return df
 
-  def get_cn_fund_list(self):
+  def get_cn_fund_list(self, type = 18):
       """
       Fetch fund list data from Xueqiu API.
       
-      Parameters:
-      - market: Market type (e.g., "cn" for China, "us" for US).
-      - page: Page number for pagination.
-      - size: Number of items per page.
+      type: int
+      分级基金 11
+      货币型 12
+      股票型 13
+      债券型 14
+      混合型 15
+      QDII基金 16
+      指数型基金 17
+      ETF 18
+      LOF 19
+      FOF 20
+      场外基金 21
       
       Returns:
       - DataFrame containing fund list data.
@@ -261,7 +269,7 @@ class us_finance_xq_getter:
           ('size', 3000),
           ('order', 'desc'),          # Order by descending
           ('order_by', 'percent'),    # Order by percentage
-          ('type', '18'),             # Type of fund
+          ('type', type),             # Type of fund
           ('parent_type', '1')        # Parent type
       ]
       df = self.get_data_1(url, params)

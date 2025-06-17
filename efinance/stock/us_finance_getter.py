@@ -195,15 +195,15 @@ class us_finance_getter:
     df = self.get_data_1(url, params)
     return df
 
-  def get_us_finance_cash(self, symbol):
+  def xq_get_cash(self, symbol):
     df = self.get_us_finance_common(symbol, reportName = 'RPT_USSK_FN_CASHFLOW')
     return df
   
-  def get_us_finance_balance(self, symbol):
+  def xq_get_balance(self, symbol):
     df = self.get_us_finance_common(symbol, reportName = 'RPT_USF10_FN_BALANCE')
     return df
 
-  def get_us_finance_income(self, symbol):
+  def xq_get_income(self, symbol):
     df = self.get_us_finance_common(symbol, reportName = 'RPT_USF10_FN_INCOME')
     return df
 
@@ -246,7 +246,7 @@ class us_finance_getter:
       return pd.DataFrame()
       # exit(-1)
 
-  def get_us_finance_main_factor(self, symbol):
+  def xq_get_indicator(self, symbol):
 
     url = 'https://datacenter.eastmoney.com/securities/api/data/v1/get'
 

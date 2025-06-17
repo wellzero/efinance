@@ -17,13 +17,13 @@ datacenter_xq = ef.stock.us_finance_xq_getter()
 sym = "SH600519"
 sym = "sz980035"
 sym = "SH518660"
-data = datacenter_xq.get_us_finance_daily_trade(symbol = sym)
-# data = datacenter_xq.get_us_finance_cash(symbol = sym)
+data = datacenter_xq.xq_get_kline(symbol = sym)
+# data = datacenter_xq.xq_get_cash(symbol = sym)
 print(data)
-data = datacenter_xq.get_us_finance_income(symbol = sym)
+data = datacenter_xq.xq_get_income(symbol = sym)
 print(data)
-data = datacenter_xq.get_us_finance_balance(symbol = sym)
+data = datacenter_xq.xq_get_balance(symbol = sym)
 print(data)
 
-data = datacenter_xq.get_us_finance_main_factor(symbol = sym)
+data = datacenter_xq.xq_get_indicator(symbol = sym)
 print(data)
