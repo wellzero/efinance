@@ -68,9 +68,19 @@ def get_cookies():
   options.add_argument('--no-sandbox')
   options.add_argument('--disable-dev-shm-usage')
   
-  print("ChromeDriverManager().install()")
-  driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-  print("ChromeDriverManager().install() finished")
+  try:
+    print("ChromeDriverManager().install()")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    print("ChromeDriverManager().install() finished")
+  except Exception as e:
+    print("Error installing ChromeDriver:", e)
+    print("Trying to use existing ChromeDriver...")
+    # If the above fails, you can try using an existing ChromeDriver
+    driver = webdriver.Chrome(options=options)
+
+    print(f"Using existing ChromeDriver driver {driver}...")
+    # Uncomment the line below if you have a specific path to your ChromeDriver
+    # driver = webdriver.Chrome(executable_path='/path/to/chromedriver', options=options)
   # driver = webdriver.Chrome(options=options)
 
   # Navigate to the website
@@ -151,14 +161,13 @@ class us_finance_xq_getter:
 
     if(len(df) > 0):
       if 'report_date' not in df.columns:
-        return df
+        return df, response
       else:
         df['report_date'] = pd.to_datetime(df['report_date'], unit='ms')
-        return df
+        return df, response
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
-      return pd.DataFrame()
-      # exit(-1)
+      return pd.DataFrame(), response
 
   def xq_get_cash(self, symbol):
 # symbol: AAPL
@@ -173,8 +182,8 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
   
   def xq_get_balance(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
@@ -184,8 +193,8 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
 
   def xq_get_income(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
@@ -195,8 +204,8 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
   
   def xq_get_indicator(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
@@ -206,8 +215,8 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
 
   def xq_get_kline(self, symbol):
     url = 'https://stock.xueqiu.com/v5/stock/chart/kline.json'
@@ -272,8 +281,8 @@ class us_finance_xq_getter:
           ('type', type),             # Type of fund
           ('parent_type', '1')        # Parent type
       ]
-      df = self.get_data_1(url, params)
-      return df
+      df, data_json = self.get_data_1(url, params)
+      return df, data_json
 
 # https://stock.xueqiu.com/v5/stock/chart/kline.json
 # symbol SZ980023
