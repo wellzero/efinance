@@ -67,7 +67,20 @@ def get_cookies():
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
   options.add_argument('--disable-dev-shm-usage')
-  driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+  
+  try:
+    print("ChromeDriverManager().install()")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    print("ChromeDriverManager().install() finished")
+  except Exception as e:
+    print("Error installing ChromeDriver:", e)
+    print("Trying to use existing ChromeDriver...")
+    # If the above fails, you can try using an existing ChromeDriver
+    driver = webdriver.Chrome(options=options)
+
+    print(f"Using existing ChromeDriver driver {driver}...")
+    # Uncomment the line below if you have a specific path to your ChromeDriver
+    # driver = webdriver.Chrome(executable_path='/path/to/chromedriver', options=options)
   # driver = webdriver.Chrome(options=options)
 
   # Navigate to the website
@@ -80,6 +93,7 @@ def get_cookies():
   page_source = driver.page_source
 
   # Get cookies
+  print("Getting cookies...")
   cookies = driver.get_cookies()
   print("Cookies:", cookies)
   cookie_str = str()
@@ -146,15 +160,16 @@ class us_finance_xq_getter:
     df = pd.DataFrame(data)
 
     if(len(df) > 0):
-
-      df['report_date'] = pd.to_datetime(df['report_date'], unit='ms')
-      return df
+      if 'report_date' not in df.columns:
+        return df, response
+      else:
+        df['report_date'] = pd.to_datetime(df['report_date'], unit='ms')
+        return df, response
     else:
       print("download url", url, "param ", param_temp, "failed, pls check it!")
-      return pd.DataFrame()
-      # exit(-1)
+      return pd.DataFrame(), response
 
-  def get_us_finance_cash(self, symbol):
+  def xq_get_cash(self, symbol):
 # symbol: AAPL
 # type: all
 # is_detail: true
@@ -167,10 +182,10 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
   
-  def get_us_finance_balance(self, symbol):
+  def xq_get_balance(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/balance.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -178,10 +193,10 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
 
-  def get_us_finance_income(self, symbol):
+  def xq_get_income(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/income.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -189,10 +204,10 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
   
-  def get_us_finance_main_factor(self, symbol):
+  def xq_get_indicator(self, symbol):
     url = f'https://stock.xueqiu.com/v5/stock/finance/{self.market}/indicator.json'
     params = [
             ('symbol', f'{symbol}'),
@@ -200,10 +215,10 @@ class us_finance_xq_getter:
             ('is_detail', 'true'),
             ('count', '5000')
     ]
-    df = self.get_data_1(url, params)
-    return df
+    df, data_json = self.get_data_1(url, params)
+    return df, data_json
 
-  def get_us_finance_daily_trade(self, symbol):
+  def xq_get_kline(self, symbol):
     url = 'https://stock.xueqiu.com/v5/stock/chart/kline.json'
 #     symbol: NVDA
 # begin: 1719615730587
@@ -236,3 +251,43 @@ class us_finance_xq_getter:
     ]
     df = self.get_data_daily_data(url, params)
     return df
+
+  def get_cn_fund_list(self, type = 18):
+      """
+      Fetch fund list data from Xueqiu API.
+      
+      type: int
+      分级基金 11
+      货币型 12
+      股票型 13
+      债券型 14
+      混合型 15
+      QDII基金 16
+      指数型基金 17
+      ETF 18
+      LOF 19
+      FOF 20
+      场外基金 21
+      
+      Returns:
+      - DataFrame containing fund list data.
+      """
+      url = 'https://stock.xueqiu.com/v5/stock/screener/fund/list.json'
+      params = [
+          ('page', 1),
+          ('size', 3000),
+          ('order', 'desc'),          # Order by descending
+          ('order_by', 'percent'),    # Order by percentage
+          ('type', type),             # Type of fund
+          ('parent_type', '1')        # Parent type
+      ]
+      df, data_json = self.get_data_1(url, params)
+      return df, data_json
+
+# https://stock.xueqiu.com/v5/stock/chart/kline.json
+# symbol SZ980023
+# begin 1749823680535
+# period day
+# type before
+# count -284
+# indicator kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance

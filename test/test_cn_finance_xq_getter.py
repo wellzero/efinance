@@ -14,7 +14,9 @@ datacenter_xq = ef.stock.us_finance_xq_getter()
 # sym = datacenter.get_secucode("MSFT")
 # sym = datacenter.get_secucode("MMM")
 
-sym = "MSFT"
+sym = "SH600519"
+sym = "sz980035"
+sym = "SH518660"
 data = datacenter_xq.xq_get_kline(symbol = sym)
 # data = datacenter_xq.xq_get_cash(symbol = sym)
 print(data)
