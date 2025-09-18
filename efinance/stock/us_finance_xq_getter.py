@@ -62,28 +62,29 @@ def get_cookies():
   os.environ.pop('http_proxy', None)
   os.environ.pop('https_proxy', None)
 
+   
   # Set up the Chrome driver
   options = Options()
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
   options.add_argument('--disable-dev-shm-usage')
-  
+  options.add_argument("--disable-gpu")
+
+  # Set binary location to Chrome executable
+  options.binary_location = '/opt/google/chrome/chrome'  # Adjust if the file is named differently (e.g., google-chrome)
+
+  print("Setting up Chrome driver...")
   try:
-    print("ChromeDriverManager().install()")
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    print("ChromeDriverManager().install() finished")
+      # Use specific chromedriver path
+      service = Service('/opt/chromedriver/chromedriver')
+      driver = webdriver.Chrome(service=service, options=options)
+      print("Chrome driver setup successful.")
   except Exception as e:
-    print("Error installing ChromeDriver:", e)
-    print("Trying to use existing ChromeDriver...")
-    # If the above fails, you can try using an existing ChromeDriver
-    driver = webdriver.Chrome(options=options)
-
-    print(f"Using existing ChromeDriver driver {driver}...")
-    # Uncomment the line below if you have a specific path to your ChromeDriver
-    # driver = webdriver.Chrome(executable_path='/path/to/chromedriver', options=options)
-  # driver = webdriver.Chrome(options=options)
-
+      print(f"Error setting up driver: {e}")
+      exit()
+      
   # Navigate to the website
+  print("Navigating to xueqiu.com...")
   driver.get("https://xueqiu.com/")
 
   # Print the page title
@@ -154,6 +155,7 @@ class us_finance_xq_getter:
     dfs: List[pd.DataFrame] = []
 
     param_temp = params
+    print("Downloading url", url, "params", param_temp)
     response = get_common_json(url, param_temp, head = headers)
 
     data = jsonpath(response, '$..list[:]')
