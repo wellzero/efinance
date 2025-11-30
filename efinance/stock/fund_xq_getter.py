@@ -131,9 +131,9 @@ class fund_xq_getter:
     df, data_json = self.get_data(url, params)
     return df, data_json
 
-  def get_ratio_history_data(self, symbol, option = "pe_history", day="all"):
+  def get_ratio_history_data(self, symbol, option = "pe", day="all"):
     # Construct the API URL
-    url = f"https://danjuanfunds.com/djapi/index_eva/{option}/{symbol}?day={day}"
+    url = f"https://danjuanfunds.com/djapi/index_eva/{option}_history/{symbol}?day={day}"
     
     # Execute JavaScript to fetch the data
     script = f"""
@@ -146,12 +146,12 @@ class fund_xq_getter:
     try:
         # Execute the script and get the JSON data
         result = self.driver.execute_script(script)
-        return result
+        return pd.DataFrame(result['data'][f'index_eva_{option}_growths'])
     except Exception as e:
         print(f"Error fetching data: {e}")
         return None
     
-  def create_valuation_dataframe(self, symbol, pe_data, roe_data, pb_data):
+  def create_valuation_dataframe(self, symbol, pe_df, roe_df, pb_df):
     """
     Convert PB, PE, and ROE data into a DataFrame with two-level index ['symbol', 'date']
     
@@ -173,26 +173,15 @@ class fund_xq_getter:
     """
     import pandas as pd
     
-    # Extract data from each response
-    pe_records = pe_data['data']['index_eva_pe_growths']
-    roe_records = roe_data['data']['index_eva_roe_growths']
-    pb_records = pb_data['data']['index_eva_pb_growths']
-    
-    # Create DataFrames for each metric
-    pe_df = pd.DataFrame(pe_records)
-    roe_df = pd.DataFrame(roe_records)
-    pb_df = pd.DataFrame(pb_records)
-    
     # Rename columns for clarity
     pe_df = pe_df.rename(columns={'ts': 'date', 'pe': 'pe'})
     roe_df = roe_df.rename(columns={'ts': 'date', 'roe': 'roe'})
     pb_df = pb_df.rename(columns={'ts': 'date', 'pb': 'pb'})
 
-    # Convert timestamp (milliseconds) to date only (YYYY-MM-DD)
-    # pe_df['date'] = pe_df['date'].apply(lambda ts: datetime.datetime.fromtimestamp(ts / 1000.0).date())
-    # roe_df['date'] = roe_df['date'].apply(lambda ts: datetime.datetime.fromtimestamp(ts / 1000.0).date())
-    # pb_df['date'] = pb_df['date'].apply(lambda ts: datetime.datetime.fromtimestamp(ts / 1000.0).date())
+    # Convert ROE from decimal to percentage by multiplying by 100
+    roe_df['roe'] = roe_df['roe'] * 100
 
+    # Convert timestamp (milliseconds) to date only (YYYY-MM-DD)
     pe_df['date'] = pe_df['date'].apply(lambda ts: datetime.fromtimestamp(ts / 1000.0).date())
     roe_df['date'] = roe_df['date'].apply(lambda ts: datetime.fromtimestamp(ts / 1000.0).date())
     pb_df['date'] = pb_df['date'].apply(lambda ts: datetime.fromtimestamp(ts / 1000.0).date())
@@ -214,7 +203,14 @@ class fund_xq_getter:
   def get_fund_valuation_data(self, symbol: str, day="all"):
     # Get PE, ROE, PB data
 
-    pe_data = self.get_ratio_history_data(symbol, option = "pe_history", day = day)
-    roe_data = self.get_ratio_history_data(symbol, option = "roe_history", day = day)
-    pb_data = self.get_ratio_history_data(symbol, option = "pb_history", day = day)
-    return self.create_valuation_dataframe(symbol, pe_data, roe_data, pb_data)
+    pe_df = self.get_ratio_history_data(symbol, option = "pe", day = day)
+    roe_df = self.get_ratio_history_data(symbol, option = "roe", day = day)
+    pb_df = self.get_ratio_history_data(symbol, option = "pb", day = day)
+
+    if (len(pe_df) == 0):
+       print(f"symbol {symbol} PE records found:  {len(pe_df)}")
+    if (len(roe_df) == 0):
+       print(f"symbol {symbol} ROE records found:  {len(roe_df)}")
+    if (len(pb_df) == 0):
+       print(f"symbol {symbol} PB records found:  {len(pb_df)}")
+    return self.create_valuation_dataframe(symbol, pe_df, roe_df, pb_df)
