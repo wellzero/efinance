@@ -16,6 +16,69 @@ from .config import (EASTMONEY_BASE_INFO_FIELDS, EASTMONEY_HISTORY_BILL_FIELDS,
                      EASTMONEY_QUOTE_FIELDS, EASTMONEY_REQUEST_HEADERS,
                      MagicConfig)
 
+def get_driver():
+  print("getting cookies....")
+  from selenium import webdriver
+  from selenium.webdriver.chrome.service import Service
+  from selenium.webdriver.chrome.options import Options
+  from webdriver_manager.chrome import ChromeDriverManager
+
+  import os
+  os.environ.pop('HTTP_PROXY', None)
+  os.environ.pop('HTTPS_PROXY', None)
+  os.environ.pop('http_proxy', None)
+  os.environ.pop('https_proxy', None)
+
+   
+  # Set up the Chrome driver
+  options = Options()
+  options.add_argument('--headless')
+  options.add_argument('--no-sandbox')
+  options.add_argument('--disable-dev-shm-usage')
+  options.add_argument("--disable-gpu")
+
+  # Set binary location to Chrome executable
+  options.binary_location = '/opt/google/chrome/chrome'  # Adjust if the file is named differently (e.g., google-chrome)
+
+  print("Setting up Chrome driver...")
+  try:
+      # Use specific chromedriver path
+      service = Service('/opt/chromedriver/chromedriver')
+      driver = webdriver.Chrome(service=service, options=options)
+      print("Chrome driver setup successful.")
+  except Exception as e:
+      print(f"Error setting up driver: {e}")
+      exit()
+
+  return driver
+
+def get_cookies(url="https://xueqiu.com/"):
+  driver = get_driver(url=url)
+
+  # Navigate to the website
+  print(f"Navigating to {url}...")
+  driver.get(url)
+
+  # Print the page title
+  print(driver.title)
+
+  # Get cookies
+  print("Getting cookies...")
+  cookies = driver.get_cookies()
+  print("Cookies:", cookies)
+  cookie_str = str()
+  for cookie in cookies:
+      cookie_str += cookie['name']
+      cookie_str +='='
+      cookie_str += cookie['value']
+      cookie_str +='; '
+      print(cookie)
+
+  # Close the browser
+  driver.quit()
+  print(cookie_str)
+  return cookie_str
+
 @to_numeric
 def get_realtime_quotes_by_fs(fs: str,
                               **kwargs) -> pd.DataFrame:

@@ -10,6 +10,7 @@ from .getter import (get_all_company_performance, get_all_report_dates,
 from .us_finance_getter import us_finance_getter
 from .us_finance_xq_getter import us_finance_xq_getter
 from .us_finance_xq_sector_getter import us_finance_xq_sector_getter
+from .fund_xq_getter import fund_xq_getter
 from .us_equity_longport_getter import us_equity_longport_getter
 from .us_equity_getter import us_equity_getter
 from .datacenter_getter import (datacenter)

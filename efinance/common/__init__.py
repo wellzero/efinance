@@ -6,6 +6,8 @@ from .getter import (
     get_history_bill,
     get_base_info,
     get_deal_detail,
-    get_latest_quote
+    get_latest_quote,
+    get_cookies,
+    get_driver,
 )
 __all__ = []
