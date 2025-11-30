@@ -188,7 +188,7 @@ class us_finance_xq_sector_getter:
     params = [ 
             ('category', self.market)
     ]
-    response = get_common_json(url, params, headers)
+    response = get_common_json(url, params, self.headers)
 
     industries = jsonpath(response, '$..industries[:]')
 

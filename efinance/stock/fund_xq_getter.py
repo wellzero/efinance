@@ -35,7 +35,7 @@ class fund_xq_getter:
   def __init__(self) -> None:
 
     self.driver = get_driver()
-    self.cookies =  self.get_cookies("https://danjuanfunds.com/", self.driver)
+    self.cookies =  self.get_cookies("https://danjuanfunds.com/")
     # 绕过网站的WebDriver检测
     self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
@@ -55,8 +55,9 @@ class fund_xq_getter:
     except:
         pass  # Silently ignore any errors during cleanup
   
-  def get_cookies(self, url, driver):
+  def get_cookies(self, url):
     # Navigate to the website
+    driver = self.driver
     print(f"Navigating to {url}...")
     driver.get(url)
 
@@ -210,7 +211,7 @@ class fund_xq_getter:
     
     return merged_df
   
-  def get_data_chrome(self, symbol: str, day="all"):
+  def get_fund_valuation_data(self, symbol: str, day="all"):
     # Get PE, ROE, PB data
 
     pe_data = self.get_ratio_history_data(symbol, option = "pe_history", day = day)

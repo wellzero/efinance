@@ -53,7 +53,7 @@ def get_driver():
   return driver
 
 def get_cookies(url="https://xueqiu.com/"):
-  driver = get_driver(url=url)
+  driver = get_driver()
 
   # Navigate to the website
   print(f"Navigating to {url}...")
